@@ -1,0 +1,43 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--neon-blue), var(--neon-purple));
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--neon-cyan), var(--neon-pink));
+}
+
+/* Custom cursor styles - only hide on body and main interactive areas */
+@media (min-width: 768px) {
+  body {
+    cursor: none;
+  }
+
+  a, button, input, textarea {
+    cursor: none;
+  }
+}
+
+/* Selection */
+::selection {
+  background: var(--neon-blue);
+  color: var(--background);
+}
