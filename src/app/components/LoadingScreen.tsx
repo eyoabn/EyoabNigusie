@@ -1,15 +1,27 @@
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { Terminal } from "lucide-react";
 
 interface LoadingScreenProps {
   onLoadingComplete: () => void;
 }
 
+const BOOT_SEQUENCE = [
+  "Initializing core system...",
+  "Loading neural network modules...",
+  "Mounting encrypted file system...",
+  "Establishing secure connection...",
+  "Compiling UI components...",
+  "Running pre-flight checks...",
+  "System optimal. Launching...",
+];
+
 export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
   const [progress, setProgress] = useState(0);
+  const [currentLine, setCurrentLine] = useState(0);
 
   useEffect(() => {
-    const duration = 2500;
+    const duration = 2800; // slightly longer for reading effect
     const interval = 20;
     const steps = duration / interval;
     const increment = 100 / steps;
@@ -19,7 +31,7 @@ export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
         const next = prev + increment;
         if (next >= 100) {
           clearInterval(timer);
-          setTimeout(onLoadingComplete, 300);
+          setTimeout(onLoadingComplete, 400);
           return 100;
         }
         return next;
@@ -29,133 +41,96 @@ export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
     return () => clearInterval(timer);
   }, [onLoadingComplete]);
 
+  useEffect(() => {
+    // Update terminal lines based on progress
+    const lineIndex = Math.min(
+      Math.floor((progress / 100) * BOOT_SEQUENCE.length),
+      BOOT_SEQUENCE.length - 1
+    );
+    setCurrentLine(lineIndex);
+  }, [progress]);
+
   return (
     <motion.div
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-background"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0a0a0a] font-mono"
     >
-      {/* Animated Background */}
-      <div className="absolute inset-0">
-        <motion.div
-          className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-neon-blue/10 blur-[120px]"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{ duration: 3, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute right-1/4 bottom-1/4 h-96 w-96 rounded-full bg-neon-purple/10 blur-[120px]"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.5, 0.3, 0.5],
-          }}
-          transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-        />
-      </div>
+      {/* Background glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neon-blue/10 via-background to-background" />
 
-      {/* Loading Content */}
-      <div className="relative z-10 flex flex-col items-center gap-8">
-        {/* Spinner with Rings */}
-        <div className="relative h-32 w-32">
-          {/* Outer Ring */}
-          <motion.div
-            className="absolute inset-0 rounded-full border-2 border-neon-blue/20"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-          >
-            <div className="absolute left-1/2 top-0 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neon-blue shadow-[0_0_15px_rgba(0,212,255,0.8)]" />
-          </motion.div>
-
-          {/* Middle Ring */}
-          <motion.div
-            className="absolute inset-4 rounded-full border-2 border-neon-purple/20"
-            animate={{ rotate: -360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          >
-            <div className="absolute left-1/2 top-0 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neon-purple shadow-[0_0_15px_rgba(168,85,247,0.8)]" />
-          </motion.div>
-
-          {/* Inner Ring */}
-          <motion.div
-            className="absolute inset-8 rounded-full border-2 border-neon-cyan/20"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-          >
-            <div className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neon-cyan shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
-          </motion.div>
-
-          {/* Center Glow */}
-          <motion.div
-            className="absolute inset-0 m-auto h-8 w-8 rounded-full bg-gradient-to-r from-neon-blue via-neon-purple to-neon-cyan"
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.5, 0.8, 0.5],
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-            style={{ filter: "blur(8px)" }}
-          />
+      {/* Terminal Window */}
+      <div className="relative z-10 w-full max-w-2xl overflow-hidden rounded-lg border border-neon-blue/30 bg-black/80 shadow-[0_0_50px_rgba(0,212,255,0.15)] backdrop-blur-xl">
+        {/* Terminal Header */}
+        <div className="flex items-center gap-2 border-b border-neon-blue/30 bg-neon-blue/10 px-4 py-2">
+          <Terminal className="h-4 w-4 text-neon-blue" />
+          <span className="text-xs font-semibold text-neon-blue/80 tracking-widest">root@eyoab-portfolio:~</span>
+          <div className="ml-auto flex gap-1.5">
+            <div className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
+            <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/80" />
+            <div className="h-2.5 w-2.5 rounded-full bg-green-500/80" />
+          </div>
         </div>
 
-        {/* Progress Counter */}
-        <div className="text-center">
-          <motion.div
-            className="mb-2 bg-gradient-to-r from-neon-blue via-neon-purple to-neon-cyan bg-clip-text text-6xl tabular-nums text-transparent"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            {Math.floor(progress)}%
-          </motion.div>
-          <motion.div
-            className="text-sm text-muted-foreground"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            Loading Experience
-          </motion.div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="w-64 overflow-hidden rounded-full border border-border bg-muted/20">
-          <motion.div
-            className="h-1 rounded-full bg-gradient-to-r from-neon-blue via-neon-purple to-neon-cyan"
-            initial={{ width: "0%" }}
-            animate={{ width: `${progress}%` }}
-            style={{
-              boxShadow: "0 0 20px rgba(0, 212, 255, 0.5)",
-            }}
-          />
-        </div>
-
-        {/* Loading Dots */}
-        <div className="flex gap-2">
-          {[0, 1, 2].map((i) => (
+        {/* Terminal Body */}
+        <div className="p-6 text-sm md:text-base">
+          {BOOT_SEQUENCE.map((line, index) => (
             <motion.div
-              key={i}
-              className="h-2 w-2 rounded-full bg-neon-cyan"
-              animate={{
-                scale: [1, 1.5, 1],
-                opacity: [0.3, 1, 0.3],
+              key={line}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ 
+                opacity: index <= currentLine ? 1 : 0,
+                x: index <= currentLine ? 0 : -10 
               }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                delay: i * 0.2,
-              }}
-            />
+              transition={{ duration: 0.2 }}
+              className="mb-2 flex items-center gap-3 text-neon-cyan/80"
+            >
+              <span className="text-neon-purple font-bold">{'>'}</span>
+              <span>{line}</span>
+              {index === currentLine && progress < 100 && (
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.8, repeat: Infinity }}
+                  className="inline-block h-4 w-2 bg-neon-cyan"
+                />
+              )}
+              {index < currentLine && (
+                <span className="ml-auto text-green-400 font-semibold">[OK]</span>
+              )}
+            </motion.div>
           ))}
+
+          {/* Progress Section */}
+          <div className="mt-8">
+            <div className="mb-2 flex justify-between text-xs text-neon-blue tracking-wider font-bold">
+              <span>SYSTEM_BOOT</span>
+              <span>{Math.floor(progress)}%</span>
+            </div>
+            
+            {/* Block Progress Bar */}
+            <div className="flex h-6 w-full overflow-hidden rounded border border-neon-blue/30 bg-black/50 p-1">
+              <motion.div
+                className="h-full bg-gradient-to-r from-neon-blue via-neon-cyan to-neon-blue"
+                initial={{ width: "0%" }}
+                animate={{ width: `${progress}%` }}
+                style={{
+                  boxShadow: "0 0 10px rgba(0, 212, 255, 0.5)",
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Corner Accents */}
-      <div className="pointer-events-none absolute left-8 top-8 h-16 w-16 border-l-2 border-t-2 border-neon-blue/50" />
-      <div className="pointer-events-none absolute right-8 top-8 h-16 w-16 border-r-2 border-t-2 border-neon-purple/50" />
-      <div className="pointer-events-none absolute bottom-8 left-8 h-16 w-16 border-b-2 border-l-2 border-neon-cyan/50" />
-      <div className="pointer-events-none absolute bottom-8 right-8 h-16 w-16 border-b-2 border-r-2 border-neon-pink/50" />
+      {/* Cyberpunk grid overlay */}
+      <div 
+        className="pointer-events-none absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: "linear-gradient(rgba(0, 212, 255, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.5) 1px, transparent 1px)",
+          backgroundSize: "30px 30px"
+        }}
+      />
     </motion.div>
   );
 }
