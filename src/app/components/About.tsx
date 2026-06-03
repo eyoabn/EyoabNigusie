@@ -104,11 +104,9 @@ export function About() {
             <div className="relative">
               <div className="mb-6 flex items-center gap-6">
                 {/* Profile Image Placeholder with gradient avatar */}
-                <div className="relative h-24 w-24 flex-shrink-0">
-                  <div className="h-24 w-24 overflow-hidden rounded-2xl border-2 border-neon-blue/30 bg-gradient-to-br from-neon-blue/30 to-neon-purple/30 shadow-[0_0_20px_rgba(0,212,255,0.3)] flex items-center justify-center">
-                    <span className="text-3xl font-bold bg-gradient-to-br from-neon-blue to-neon-purple bg-clip-text text-transparent">
-                      EN
-                    </span>
+                <div className="relative h-24 w-24 flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
+                  <div className="h-24 w-24 overflow-hidden rounded-2xl border-2 border-neon-blue/30 bg-gradient-to-br from-neon-blue/30 to-neon-purple/30 shadow-[0_0_20px_rgba(0,212,255,0.3)] flex items-center justify-center p-0.5">
+                    <img src="/profile.jpg" alt="Eyoab Nigusie" className="h-full w-full object-cover rounded-xl" />
                   </div>
                   {/* Online indicator */}
                   <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-card bg-green-500">
@@ -117,22 +115,26 @@ export function About() {
                 </div>
                 <div>
                   <h3 className="mb-1 text-2xl">Eyoab Nigusie</h3>
-                  <p className="text-sm text-muted-foreground">Senior Software Engineer</p>
+                  <p className="text-sm bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent font-medium">Software Engineer & ML Enthusiast</p>
                   <div className="mt-1 flex items-center gap-1.5">
                     <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
                     <span className="text-xs text-green-400">Available for work</span>
                   </div>
                 </div>
               </div>
-              <p className="mb-6 leading-relaxed text-muted-foreground">
-                Passionate software engineer with 5+ years of experience building cutting-edge applications.
-                Specialized in AI/ML, mobile development with Flutter, and modern web technologies.
-                I love turning complex problems into elegant, efficient solutions.
-              </p>
-              <div className="grid grid-cols-3 gap-4">
-                <AnimatedStat value={50} suffix="+" label="Projects" color="#00d4ff" />
-                <AnimatedStat value={5} suffix="+" label="Years" color="#a855f7" />
-                <AnimatedStat value={100} suffix="%" label="Dedication" color="#06b6d4" />
+              <div className="mb-6 space-y-4">
+                <p className="leading-relaxed text-muted-foreground">
+                  Passionate software engineer dedicated to building cutting-edge applications and solving real-world problems.
+                  Specialized in <span className="text-neon-blue font-medium">AI/ML</span>, mobile development with <span className="text-neon-purple font-medium">Flutter</span>, and modern web technologies.
+                </p>
+                <div className="pl-4 border-l-2 border-neon-cyan/50 text-sm text-muted-foreground/90 italic">
+                  "I thrive on turning complex challenges into elegant, efficient, and user-centric digital experiences."
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4 p-4 rounded-2xl bg-black/20 border border-white/5">
+                <AnimatedStat value={15} suffix="+" label="Projects Built" color="#00d4ff" />
+                <AnimatedStat value={5} suffix="+" label="Core Techs" color="#a855f7" />
+                <AnimatedStat value={100} suffix="%" label="Commitment" color="#06b6d4" />
               </div>
             </div>
           </motion.div>

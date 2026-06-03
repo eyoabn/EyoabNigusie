@@ -17,6 +17,7 @@ const featuredProjects = [
     category: "Mobile App",
     metrics: { users: "Active", status: "Completed", type: "Full-Stack" },
     featured: true,
+    github: "https://github.com/eyoabn/Educonnect",
   },
   {
     id: 2,
@@ -237,7 +238,9 @@ function ProjectCard3D({ project, index, onViewProject }: { project: typeof feat
             </motion.button>
 
             <motion.a
-              href="#"
+              href={project.github || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="flex items-center gap-2 rounded-xl border border-border bg-card/50 px-6 py-3 backdrop-blur-sm transition-all hover:border-neon-blue/50"
