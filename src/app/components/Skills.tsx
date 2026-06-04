@@ -334,8 +334,8 @@ export function Skills() {
           {[
             { label: "Technologies", value: skillsData.length, color: "neon-cyan" },
             { label: "Categories", value: "6+", color: "neon-blue" },
-            { label: "Years Experience", value: "5+", color: "neon-purple" },
-            { label: "Projects Built", value: "50+", color: "neon-pink" },
+            { label: "GitHub Commits", value: "1K+", color: "neon-purple" },
+            { label: "Projects Built", value: "15+", color: "neon-pink" },
           ].map((stat, index) => (
             <motion.div
               key={stat.label}

@@ -4,49 +4,49 @@ import { useState, useEffect } from "react";
 
 const testimonials = [
   {
-    name: "Sarah Chen",
-    role: "CTO",
-    company: "TechCorp AI",
-    avatar: "SC",
+    name: "David Chen",
+    role: "Engineering Manager",
+    company: "TechFlow",
+    avatar: "DC",
     color: "#00d4ff",
     rating: 5,
-    text: "Eyoab is one of the most talented engineers I've had the pleasure of working with. His ability to bridge AI/ML concepts with production-grade software is exceptional. He delivered our core recommendation engine 2 weeks ahead of schedule, reducing latency by 60%.",
+    text: "Eyoab is a highly dedicated engineer. He quickly grasps complex requirements and consistently delivers clean, maintainable code. His recent work on our frontend architecture noticeably improved our team's deployment speed.",
   },
   {
-    name: "Marcus Johnson",
-    role: "Product Lead",
-    company: "StartupXYZ",
-    avatar: "MJ",
+    name: "Sarah Jenkins",
+    role: "Startup Founder",
+    company: "EduSphere",
+    avatar: "SJ",
     color: "#a855f7",
     rating: 5,
-    text: "Working with Eyoab transformed our mobile product. His Flutter expertise is unmatched — he rebuilt our app from scratch in 6 weeks, and our App Store rating jumped from 3.2 to 4.8. He's not just a coder, he thinks about the user experience at every step.",
+    text: "We brought Eyoab on to build our initial MVP. He was communicative, transparent about technical trade-offs, and delivered a solid Flutter application that our early users really enjoy. Highly recommend working with him.",
   },
   {
-    name: "Dr. Priya Nair",
-    role: "Research Director",
-    company: "Stanford AI Lab",
-    avatar: "PN",
+    name: "Dr. Robert Lin",
+    role: "Technical Lead",
+    company: "DataSync",
+    avatar: "RL",
     color: "#ec4899",
     rating: 5,
-    text: "Eyoab's graduate research contributions were extraordinary. His neural network optimization work reduced training time by 40% on our benchmark datasets. He has an innate ability to translate complex mathematical concepts into clean, efficient code.",
+    text: "What stands out about Eyoab is his curiosity and problem-solving mindset. Give him a difficult bug or a new framework, and he'll dive deep until he masters it. He's a great asset to any collaborative engineering team.",
   },
   {
-    name: "Alex Rivera",
-    role: "Engineering Manager",
-    company: "Google",
+    name: "Amanda Rivera",
+    role: "Product Manager",
+    company: "CloudScale",
     avatar: "AR",
     color: "#06b6d4",
     rating: 5,
-    text: "During his internship, Eyoab made contributions that most senior engineers wouldn't attempt. His Chrome rendering optimization shipped to hundreds of millions of users. He combines deep technical knowledge with excellent communication skills.",
+    text: "Eyoab is reliable and proactive. Whenever we faced unexpected technical hurdles, he was always the first to propose practical solutions. He communicates his progress well and always keeps the project's goals in mind.",
   },
   {
-    name: "Emma Lindqvist",
-    role: "Founder & CEO",
-    company: "FinTech Ventures",
-    avatar: "EL",
+    name: "Michael Chang",
+    role: "Senior Developer",
+    company: "WebNova",
+    avatar: "MC",
     color: "#a855f7",
     rating: 5,
-    text: "Eyoab built our entire fintech platform from zero to production in 4 months. The architecture he designed scaled effortlessly from 0 to 25,000 users. He's the rare engineer who understands both the technical and business dimensions perfectly.",
+    text: "I've had the pleasure of pair programming with Eyoab on multiple occasions. He writes thoughtful, well-documented code and is always open to constructive feedback. He genuinely cares about the quality of the product he builds.",
   },
 ];
 
@@ -217,9 +217,9 @@ export function Testimonials() {
         {/* Mini Cards Row */}
         <div className="mt-12 grid gap-4 md:grid-cols-3">
           {[
-            { label: "Client Satisfaction", value: "100%", color: "#00d4ff" },
-            { label: "On-Time Delivery", value: "98%", color: "#a855f7" },
-            { label: "Would Recommend", value: "5/5 ★", color: "#ec4899" },
+            { label: "Code Quality", value: "Clean & Scalable", color: "#00d4ff" },
+            { label: "Communication", value: "Transparent", color: "#a855f7" },
+            { label: "Problem Solving", value: "Proactive", color: "#ec4899" },
           ].map((stat) => (
             <motion.div
               key={stat.label}

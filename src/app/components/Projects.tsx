@@ -24,13 +24,13 @@ const featuredProjects = [
     title: "Neural Network Visualizer",
     tagline: "Demystifying deep learning architectures",
     description:
-      "Interactive 3D visualization platform for understanding neural network architectures. Real-time training visualization, layer-by-layer analysis, and intuitive controls make complex ML concepts accessible to everyone.",
+      "An educational tool built to help students visualize and understand basic neural network architectures. Includes real-time training metrics and layer analysis to make complex ML concepts more approachable.",
     longDescription:
       "Interactive tool to visualize and understand neural networks. Features include layer visualization, gradient flow analysis, real-time training metrics, and architecture comparison.",
     image: "https://images.unsplash.com/photo-1770233621425-5d9ee7a0a700?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
     tags: ["Python", "TensorFlow", "D3.js", "WebGL"],
     category: "AI",
-    metrics: { users: "15K+", performance: "60 FPS", stars: "1.8K" },
+    metrics: { users: "Live", performance: "WebGL", status: "Open Source" },
     featured: true,
   },
   {
@@ -38,13 +38,13 @@ const featuredProjects = [
     title: "Real-Time Analytics Dashboard",
     tagline: "Enterprise-grade data visualization",
     description:
-      "Comprehensive analytics platform with real-time data processing, beautiful visualizations, and customizable widgets. Handles millions of events per second with sub-100ms latency using WebSocket streams and optimized rendering.",
+      "A fast, responsive analytics dashboard built for tracking real-time metrics. Uses WebSockets for live data streaming and D3.js for interactive, easy-to-read charts.",
     longDescription:
-      "Modern web dashboard with real-time data visualization. Features include customizable widgets, advanced filtering, data export, and collaborative sharing capabilities.",
+      "Modern web dashboard with real-time data visualization. Features include customizable widgets, advanced filtering, data export, and responsive design for all screen sizes.",
     image: "https://images.unsplash.com/photo-1753715613457-63127ec40824?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
     tags: ["React", "TypeScript", "WebSocket", "D3.js"],
     category: "Web",
-    metrics: { users: "50K+", uptime: "99.9%", stars: "3.2K" },
+    metrics: { users: "Internal", status: "Deployed", type: "Frontend" },
     featured: true,
   },
   {
@@ -52,14 +52,14 @@ const featuredProjects = [
     title: "Flutter Finance App",
     tagline: "Personal finance reimagined",
     description:
-      "Beautiful cross-platform mobile app for personal finance management. Features AI-powered expense categorization, investment tracking, budget planning, and smart savings recommendations. Secure, fast, and delightful to use.",
+      "A cross-platform mobile app designed for personal finance management. Features intuitive expense categorization, budget planning, and clear financial insights to help users manage their money better.",
     longDescription:
-      "Cross-platform mobile app for personal finance management. Includes expense tracking, budget planning, investment portfolio, and financial insights with ML-powered predictions.",
+      "Cross-platform mobile app for personal finance management. Includes expense tracking, budget planning, secure data storage, and visual insights.",
     image: "https://images.unsplash.com/photo-1759884248009-92c5e957708e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
-    tags: ["Flutter", "Dart", "Firebase", "ML Kit"],
+    tags: ["Flutter", "Dart", "Firebase", "SQLite"],
     category: "Mobile",
-    metrics: { downloads: "25K+", rating: "4.8★", reviews: "1.2K" },
-    featured: true,
+    metrics: { users: "Beta", platform: "iOS & Android", status: "In Progress" },
+    featured: false,
   },
 ];
 
