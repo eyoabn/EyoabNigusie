@@ -46,6 +46,7 @@ const featuredProjects = [
     category: "Web",
     metrics: { users: "Internal", status: "Deployed", type: "Frontend" },
     featured: true,
+    live: "https://real-time-analytics-jh83.onrender.com/",
   },
   {
     id: 4,
@@ -274,6 +275,11 @@ export function Projects() {
   const handleViewProject = (id: number) => {
     if (id === 1) {
       setShowEduConnectSimulator(true);
+    } else {
+      const project = featuredProjects.find((p) => p.id === id);
+      if (project && (project as any).live) {
+        window.open((project as any).live, "_blank");
+      }
     }
   };
 
