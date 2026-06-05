@@ -51,17 +51,19 @@ const featuredProjects = [
   },
   {
     id: 4,
-    title: "Flutter Finance App",
-    tagline: "Personal finance reimagined",
+    title: "Kefit Job Matching Platform",
+    tagline: "Connecting talent with opportunity",
     description:
-      "A cross-platform mobile app designed for personal finance management. Features intuitive expense categorization, budget planning, and clear financial insights to help users manage their money better.",
+      "A modern job matching platform that connects job seekers with employers efficiently. Features intuitive profile creation, advanced job search filters, and seamless application tracking.",
     longDescription:
-      "Cross-platform mobile app for personal finance management. Includes expense tracking, budget planning, secure data storage, and visual insights.",
-    image: "https://images.unsplash.com/photo-1759884248009-92c5e957708e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
-    tags: ["Flutter", "Dart", "Firebase", "SQLite"],
-    category: "Mobile",
-    metrics: { users: "Beta", platform: "iOS & Android", status: "In Progress" },
-    featured: false,
+      "Full-stack web application for job matching. Includes user authentication, role-based dashboards, and real-time notifications.",
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
+    tags: ["React", "Node.js", "MongoDB", "Express"],
+    category: "Web",
+    metrics: { users: "Live", status: "Active", type: "Full-Stack" },
+    featured: true,
+    live: "https://kefit-job-matching-platform-1.onrender.com/",
+    github: "https://github.com/eyoabn/kefit-job-matching-platform",
   },
 ];
 
