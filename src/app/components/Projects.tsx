@@ -32,6 +32,8 @@ const featuredProjects = [
     category: "AI",
     metrics: { users: "Live", performance: "WebGL", status: "Open Source" },
     featured: true,
+    live: "https://real-time-analytics-jh83.onrender.com/",
+    github: "https://github.com/eyoabn/real-time-analytics",
   },
   {
     id: 3,
@@ -46,7 +48,6 @@ const featuredProjects = [
     category: "Web",
     metrics: { users: "Internal", status: "Deployed", type: "Frontend" },
     featured: true,
-    live: "https://real-time-analytics-jh83.onrender.com/",
   },
   {
     id: 4,
