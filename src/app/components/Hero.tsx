@@ -187,8 +187,8 @@ export function Hero() {
             </motion.a>
 
             <motion.a
-              href="/resume.pdf"
-              download
+              href="/Eyoab Nigusie — Curriculum Vitae(finalist).pdf"
+              download="Eyoab Nigusie — Curriculum Vitae(finalist).pdf"
               className="group flex items-center gap-3 rounded-2xl border border-border bg-card/30 px-8 py-4 font-medium backdrop-blur-md transition-all hover:border-neon-purple hover:bg-neon-purple/10 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

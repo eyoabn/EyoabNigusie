@@ -10,8 +10,20 @@ export function Footer() {
   ];
 
   const links = {
-    Navigation: ["Home", "About", "Projects", "Skills", "Experience", "Contact"],
-    Resources: ["Blog", "Resume", "GitHub", "LinkedIn"],
+    Navigation: [
+      { name: "Home", href: "#" },
+      { name: "About", href: "#about" },
+      { name: "Projects", href: "#projects" },
+      { name: "Skills", href: "#skills" },
+      { name: "Experience", href: "#experience" },
+      { name: "Contact", href: "#contact" },
+    ],
+    Resources: [
+      { name: "Blog", href: "#" },
+      { name: "Resume", href: "/Eyoab Nigusie — Curriculum Vitae(finalist).pdf", download: "Eyoab Nigusie — Curriculum Vitae(finalist).pdf" },
+      { name: "GitHub", href: "https://github.com/eyoabn", target: "_blank", rel: "noopener noreferrer" },
+      { name: "LinkedIn", href: "#" },
+    ],
   };
 
   return (
@@ -65,13 +77,16 @@ export function Footer() {
               <h4 className="mb-4">{category}</h4>
               <ul className="space-y-2">
                 {items.map((item) => (
-                  <li key={item}>
+                  <li key={item.name}>
                     <motion.a
-                      href="#"
+                      href={item.href}
+                      download={item.download}
+                      target={item.target}
+                      rel={item.rel}
                       className="text-sm text-muted-foreground transition-colors hover:text-neon-cyan"
                       whileHover={{ x: 5 }}
                     >
-                      {item}
+                      {item.name}
                     </motion.a>
                   </li>
                 ))}
