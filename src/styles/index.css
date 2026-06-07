@@ -25,13 +25,16 @@ html {
   background: linear-gradient(180deg, var(--neon-cyan), var(--neon-pink));
 }
 
-/* Custom cursor styles - only hide on body and main interactive areas */
+/* Custom cursor styles - only apply on portfolio page, not admin */
 @media (min-width: 768px) {
-  body {
+  body.portfolio-page {
     cursor: none;
   }
 
-  a, button, input, textarea {
+  body.portfolio-page a,
+  body.portfolio-page button,
+  body.portfolio-page input,
+  body.portfolio-page textarea {
     cursor: none;
   }
 }

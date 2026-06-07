@@ -19,4 +19,12 @@ export default defineConfig({
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
+
+  // Required so SPA routes like /admin work on refresh / direct navigation
+  server: {
+    historyApiFallback: true,
+  },
+  preview: {
+    port: 4173,
+  },
 })
