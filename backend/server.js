@@ -25,6 +25,11 @@ if (process.env.MONGO_URI) {
 // Routes
 const Contact = require('./models/Contact');
 
+// GET - Health check / status
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Portfolio Backend API is running successfully!' });
+});
+
 // POST - Submit a contact message
 app.post('/api/contact', async (req, res) => {
   try {
