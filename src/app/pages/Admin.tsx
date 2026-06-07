@@ -140,9 +140,12 @@ export function Admin() {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center gap-4 font-sans">
+      <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center gap-4 font-sans text-center px-4">
         <Loader2 className="h-10 w-10 animate-spin text-neon-cyan" />
-        <p className="text-muted-foreground text-sm">Verifying session...</p>
+        <p className="text-muted-foreground text-sm font-medium">Verifying session...</p>
+        <p className="text-xs text-muted-foreground/60 max-w-xs leading-relaxed">
+          Note: Since the backend is hosted on a free tier, it may take up to 50 seconds to spin up from sleep if it has been inactive.
+        </p>
       </div>
     );
   }
@@ -313,9 +316,12 @@ export function Admin() {
 
         {/* Content */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-32 gap-4">
+          <div className="flex flex-col items-center justify-center py-32 gap-4 text-center px-4">
             <Loader2 className="h-10 w-10 animate-spin text-neon-cyan" />
             <p className="text-muted-foreground">Loading messages...</p>
+            <p className="text-xs text-muted-foreground/60 max-w-sm leading-relaxed">
+              Note: The database connection and backend API use a free server instance. It may take 30-50 seconds to wake up from cold start if inactive. Thank you for your patience!
+            </p>
           </div>
         ) : error ? (
           <motion.div

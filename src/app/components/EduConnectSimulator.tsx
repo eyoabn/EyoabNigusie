@@ -389,13 +389,25 @@ export default function EduConnectSimulator({ onClose }: { onClose: () => void }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md overflow-y-auto">
+    <div 
+      className="fixed inset-0 z-50 flex justify-center items-start lg:items-center p-4 lg:p-8 bg-background/80 backdrop-blur-md overflow-y-auto cursor-pointer"
+      onClick={onClose}
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="relative flex flex-col items-center justify-center w-full max-w-5xl gap-8 lg:flex-row"
+        onClick={(e) => e.stopPropagation()}
+        className="relative flex flex-col items-center justify-center w-full max-w-5xl gap-8 lg:flex-row my-auto cursor-default"
       >
+        {/* Floating Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute -top-3 right-0 lg:-top-6 lg:-right-6 p-2 rounded-full border border-border bg-card/80 hover:bg-neon-pink/10 hover:border-neon-pink/50 transition-all z-50 group shadow-md"
+          title="Close Simulator"
+        >
+          <X className="h-4 w-4 text-muted-foreground group-hover:text-neon-pink group-hover:rotate-90 transition-all" />
+        </button>
         {/* Information Panel */}
         <div className="flex-1 text-left space-y-4 max-w-md">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neon-cyan/30 bg-neon-cyan/10">
