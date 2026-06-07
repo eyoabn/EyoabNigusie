@@ -212,7 +212,7 @@ export function Admin() {
 
           <div className="mt-8 text-center">
             <a
-              href="/"
+              href="#/"
               className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="h-3 w-3" />
@@ -237,7 +237,7 @@ export function Admin() {
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <a
-              href="/"
+              href="#/"
               className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
