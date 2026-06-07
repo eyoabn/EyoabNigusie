@@ -20,6 +20,13 @@ export function Admin() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  // Authentication States
+  const [password, setPassword] = useState(localStorage.getItem("admin_password") || "");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [inputPassword, setInputPassword] = useState("");
+
   // Ensure dark mode and normal cursor on admin page
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -29,29 +36,79 @@ export function Admin() {
     };
   }, []);
 
-  const fetchMessages = async () => {
+  const fetchMessages = async (pass?: string) => {
     setLoading(true);
     setError(null);
+    const passToUse = pass !== undefined ? pass : password;
     try {
-      const res = await fetch(`${API_URL}/api/contact`);
+      const res = await fetch(`${API_URL}/api/contact`, {
+        headers: {
+          'x-admin-password': passToUse
+        }
+      });
+      
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        localStorage.removeItem("admin_password");
+        throw new Error("UNAUTHORIZED");
+      }
+      
       if (!res.ok) throw new Error(`Server responded with ${res.status}`);
       const data = await res.json();
       setMessages(data);
+      
+      if (passToUse) {
+        setIsAuthenticated(true);
+        localStorage.setItem("admin_password", passToUse);
+        setPassword(passToUse);
+      } else {
+        // If password is empty but server returned 200, it means no ADMIN_PASSWORD is set on the backend.
+        setIsAuthenticated(true);
+      }
     } catch (err: any) {
-      setError(err.message || "Could not connect to the backend server. Make sure it is running.");
+      if (err.message === "UNAUTHORIZED") {
+        setError("Invalid admin password.");
+      } else {
+        setError(err.message || "Could not connect to the backend server. Make sure it is running.");
+      }
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchMessages();
+    const initAuth = async () => {
+      const storedPass = localStorage.getItem("admin_password") || "";
+      try {
+        await fetchMessages(storedPass);
+      } catch (err: any) {
+        if (err.message !== "UNAUTHORIZED") {
+          setIsAuthenticated(!!storedPass);
+        }
+      } finally {
+        setCheckingAuth(false);
+      }
+    };
+    initAuth();
   }, []);
 
   const handleDelete = async (id: string) => {
     setDeleting(true);
     try {
-      await fetch(`${API_URL}/api/contact/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_URL}/api/contact/${id}`, {
+        method: "DELETE",
+        headers: {
+          'x-admin-password': password
+        }
+      });
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        localStorage.removeItem("admin_password");
+        alert("Session expired. Please log in again.");
+        return;
+      }
+      if (!res.ok) throw new Error("Delete failed");
       setMessages((prev) => prev.filter((m) => m._id !== id));
       setDeleteId(null);
       if (selectedMessage?._id === id) setSelectedMessage(null);
@@ -62,10 +119,110 @@ export function Admin() {
     }
   };
 
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError(null);
+    try {
+      await fetchMessages(inputPassword);
+    } catch (err: any) {
+      if (err.message === "UNAUTHORIZED") {
+        setLoginError("Incorrect password. Please try again.");
+      } else {
+        setLoginError("Failed to connect. Check your server or internet connection.");
+      }
+    }
+  };
+
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
   };
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center gap-4 font-sans">
+        <Loader2 className="h-10 w-10 animate-spin text-neon-cyan" />
+        <p className="text-muted-foreground text-sm">Verifying session...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 font-sans relative">
+        {/* Animated background glow */}
+        <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-neon-blue/5 blur-[120px]" />
+          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-neon-purple/5 blur-[120px]" />
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md rounded-2xl border border-border bg-card/60 backdrop-blur-xl p-8 shadow-2xl relative overflow-hidden"
+        >
+          {/* Decorative Top Border Line */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-neon-blue to-neon-purple" />
+          
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-neon-cyan via-neon-blue to-neon-purple bg-clip-text text-transparent mb-2">
+              Admin Portal
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Please enter your admin password to access the messages dashboard.
+            </p>
+          </div>
+
+          <form onSubmit={handleLoginSubmit} className="space-y-5">
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                Admin Password
+              </label>
+              <input
+                type="password"
+                value={inputPassword}
+                onChange={(e) => setInputPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                className="w-full rounded-xl border border-border bg-background/50 px-4 py-3 text-sm placeholder:text-muted-foreground/50 focus:border-neon-cyan/50 focus:outline-none focus:ring-1 focus:ring-neon-cyan/50 transition-all"
+              />
+            </div>
+
+            {loginError && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-400"
+              >
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                <span>{loginError}</span>
+              </motion.div>
+            )}
+
+            <motion.button
+              type="submit"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-cyan py-3 text-sm font-semibold text-background hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all flex items-center justify-center gap-2"
+            >
+              Access Dashboard
+            </motion.button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <a
+              href="/"
+              className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-3 w-3" />
+              Back to Portfolio
+            </a>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
@@ -99,7 +256,7 @@ export function Admin() {
               {messages.length} {messages.length === 1 ? "message" : "messages"}
             </div>
             <motion.button
-              onClick={fetchMessages}
+              onClick={() => fetchMessages()}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               disabled={loading}
@@ -107,6 +264,19 @@ export function Admin() {
             >
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
               Refresh
+            </motion.button>
+            <motion.button
+              onClick={() => {
+                localStorage.removeItem("admin_password");
+                setIsAuthenticated(false);
+                setPassword("");
+                setInputPassword("");
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-xs hover:bg-red-500/20 text-red-400 transition-all"
+            >
+              Log Out
             </motion.button>
           </div>
         </div>

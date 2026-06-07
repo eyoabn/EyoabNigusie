@@ -25,6 +25,22 @@ if (process.env.MONGO_URI) {
 // Routes
 const Contact = require('./models/Contact');
 
+// Admin Authentication Middleware
+const adminAuth = (req, res, next) => {
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (!adminPassword) {
+    // If ADMIN_PASSWORD is not set, allow access but log a warning
+    console.warn("WARNING: ADMIN_PASSWORD is not set in environment variables. Admin endpoints are publicly accessible.");
+    return next();
+  }
+  
+  const clientPassword = req.headers['x-admin-password'];
+  if (clientPassword !== adminPassword) {
+    return res.status(401).json({ error: 'Unauthorized: Invalid admin password.' });
+  }
+  next();
+};
+
 // GET - Health check / status
 app.get('/', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Portfolio Backend API is running successfully!' });
@@ -55,7 +71,7 @@ app.post('/api/contact', async (req, res) => {
 });
 
 // GET - Fetch all contact messages (for admin dashboard)
-app.get('/api/contact', async (req, res) => {
+app.get('/api/contact', adminAuth, async (req, res) => {
   try {
     if (!process.env.MONGO_URI) {
       return res.status(503).json({ error: 'Database not connected' });
@@ -69,7 +85,7 @@ app.get('/api/contact', async (req, res) => {
 });
 
 // DELETE - Remove a contact message by ID
-app.delete('/api/contact/:id', async (req, res) => {
+app.delete('/api/contact/:id', adminAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const deleted = await Contact.findByIdAndDelete(id);
