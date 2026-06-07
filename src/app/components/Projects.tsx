@@ -402,7 +402,9 @@ export function Projects() {
           className="mt-12 text-center"
         >
           <motion.a
-            href="#"
+            href="https://github.com/eyoabn?tab=repositories"
+            target="_blank"
+            rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="inline-flex items-center gap-2 rounded-xl border border-neon-purple bg-neon-purple/10 px-8 py-4 transition-all hover:bg-neon-purple/20 hover:shadow-[0_0_30px_rgba(168,85,247,0.3)]"
