@@ -24,8 +24,33 @@ export function Home() {
     document.body.classList.add("portfolio-page");
     document.documentElement.classList.add("dark");
     document.documentElement.style.scrollBehavior = "smooth";
+
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest("a");
+      if (anchor) {
+        const href = anchor.getAttribute("href");
+        // Check if it's a page anchor link (starts with # and is not a route like #/admin)
+        if (href && href.startsWith("#") && !href.startsWith("#/")) {
+          e.preventDefault();
+          const id = href.substring(1);
+          if (id === "") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          } else {
+            const el = document.getElementById(id);
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth" });
+            }
+          }
+        }
+      }
+    };
+
+    window.addEventListener("click", handleGlobalClick);
+
     return () => {
       document.body.classList.remove("portfolio-page");
+      window.removeEventListener("click", handleGlobalClick);
     };
   }, []);
 

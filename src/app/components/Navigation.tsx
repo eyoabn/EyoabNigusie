@@ -17,6 +17,20 @@ export function Navigation() {
   const [activeSection, setActiveSection] = useState("");
   const { scrollY } = useScroll();
 
+  // Helper for smooth scrolling on anchor links
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href && href.startsWith("#") && !href.startsWith("#/")) {
+      e.preventDefault();
+      const id = href.substring(1);
+      if (id === "") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   useEffect(() => {
     return scrollY.on("change", (latest) => {
       setIsVisible(latest > 100);
@@ -51,7 +65,7 @@ export function Navigation() {
       initial={{ y: -100 }}
       animate={{ y: isVisible ? 0 : -100 }}
       transition={{ duration: 0.3 }}
-      className="fixed left-0 right-0 top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl"
+      className="fixed left-0 right-0 top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl cursor-none"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         {/* Logo */}
@@ -71,6 +85,7 @@ export function Navigation() {
               <motion.a
                 key={item.label}
                 href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
                 className="relative text-sm transition-colors"
                 style={{ color: isActive ? "var(--neon-cyan)" : "var(--muted-foreground)" }}
                 whileHover={{ y: -2 }}
@@ -92,6 +107,7 @@ export function Navigation() {
         <div className="hidden md:block">
           <motion.a
             href="#contact"
+            onClick={(e) => handleNavClick(e, "#contact")}
             className="rounded-full bg-gradient-to-r from-neon-blue to-neon-cyan px-5 py-2 text-sm font-medium text-background transition-all hover:shadow-[0_0_20px_rgba(0,212,255,0.4)]"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -121,7 +137,10 @@ export function Navigation() {
             <a
               key={item.label}
               href={item.href}
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={(e) => {
+                handleNavClick(e, item.href);
+                setIsMobileMenuOpen(false);
+              }}
               className="block text-sm transition-colors"
               style={{
                 color:
@@ -135,7 +154,10 @@ export function Navigation() {
           ))}
           <a
             href="#contact"
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={(e) => {
+              handleNavClick(e, "#contact");
+              setIsMobileMenuOpen(false);
+            }}
             className="block w-full rounded-full bg-gradient-to-r from-neon-blue to-neon-cyan py-2 text-center text-sm font-medium text-background"
           >
             Hire Me

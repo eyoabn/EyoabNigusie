@@ -106,7 +106,7 @@ export function Skills() {
             Skills Universe
           </h2>
           <p className="mb-4 text-sm text-muted-foreground">
-            Interactive neural network of expertise • Hover to explore connections
+            Interactive neural network of expertise • Hover or Tap & Hold a skill to focus its connections (other skills will fade out and back)
           </p>
           <div className="mx-auto h-1 w-20 rounded-full bg-gradient-to-r from-neon-cyan to-neon-purple" />
         </motion.div>
@@ -210,6 +210,8 @@ export function Skills() {
                 transition={{ duration: 0.5, delay: index * 0.02 }}
                 onHoverStart={() => setHoveredSkill(skill.name)}
                 onHoverEnd={() => setHoveredSkill(null)}
+                onTouchStart={() => setHoveredSkill(skill.name)}
+                onTouchEnd={() => setHoveredSkill(null)}
               >
                 {/* Outer Glow Ring */}
                 <motion.div
