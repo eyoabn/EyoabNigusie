@@ -55,8 +55,8 @@ export function Hero() {
   const mouseY = useMotionValue(0);
   const role = useTypewriter(roles);
 
-  const smoothX = useSpring(mouseX, { stiffness: 50, damping: 20 });
-  const smoothY = useSpring(mouseY, { stiffness: 50, damping: 20 });
+  const smoothX = useSpring(mouseX, { stiffness: 150, damping: 15 });
+  const smoothY = useSpring(mouseY, { stiffness: 150, damping: 15 });
 
   // Parallax transforms for background blobs
   const blob1X = useTransform(smoothX, [-500, 500], [-30, 30]);
@@ -69,7 +69,7 @@ export function Hero() {
   useEffect(() => {
     const handleMove = (e: MouseEvent) => {
       const rect = containerRef.current?.getBoundingClientRect();
-      if (!rect) return;
+      if (!rect || window.innerWidth <= 768) return;
       mouseX.set(e.clientX - rect.left - rect.width / 2);
       mouseY.set(e.clientY - rect.top - rect.height / 2);
     };

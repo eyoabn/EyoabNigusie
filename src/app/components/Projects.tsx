@@ -95,7 +95,7 @@ function ProjectCard3D({ project, index, onViewProject }: { project: typeof feat
   const rotateY = useTransform(mouseX, [-0.5, 0.5], [-5, 5]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || window.innerWidth <= 768) return;
 
     const rect = cardRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;

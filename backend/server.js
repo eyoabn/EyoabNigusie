@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -55,13 +56,38 @@ app.post('/api/contact', async (req, res) => {
       return res.status(400).json({ error: 'Please provide name, email, and message' });
     }
 
-    if (!process.env.MONGO_URI) {
+    if (process.env.MONGO_URI) {
+      const newContact = new Contact({ name, email, message });
+      await newContact.save();
+    } else {
       console.log('Received contact submission (No DB connected):', { name, email, message });
-      return res.status(201).json({ success: true, message: 'Message received (DB not configured)' });
     }
 
-    const newContact = new Contact({ name, email, message });
-    await newContact.save();
+    // Send email notification
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: process.env.EMAIL_USER,
+        replyTo: email,
+        subject: `New Portfolio Contact from ${name}`,
+        text: `You have a new message from your portfolio website!\n\nName: ${name}\nEmail: ${email}\nMessage:\n${message}`,
+      };
+
+      try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email notification sent successfully');
+      } catch (emailError) {
+        console.error('Failed to send email notification:', emailError);
+      }
+    }
 
     res.status(201).json({ success: true, message: 'Message sent successfully' });
   } catch (error) {

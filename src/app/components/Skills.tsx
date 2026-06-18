@@ -52,6 +52,14 @@ export function Skills() {
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -151,14 +159,14 @@ export function Skills() {
                     initial={{ opacity: 0.1 }}
                     animate={{ opacity }}
                     transition={{ duration: 0.3 }}
-                    filter={isActive ? "url(#glow)" : undefined}
+                    filter={!isMobile && isActive ? "url(#glow)" : undefined}
                   />
                 );
               })
             )}
 
             {/* Animated particles along connections when hovered */}
-            {hoveredSkill &&
+            {!isMobile && hoveredSkill &&
               skillsData
                 .find((s) => s.name === hoveredSkill)
                 ?.related.map((relatedName) => {
