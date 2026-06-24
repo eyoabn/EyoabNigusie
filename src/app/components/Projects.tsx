@@ -130,6 +130,7 @@ function ProjectCard3D({ project, index, onViewProject }: { project: typeof feat
         transformStyle: "preserve-3d",
       }}
       className="group relative min-w-[90vw] snap-center md:min-w-[600px] lg:min-w-[700px]"
+      data-cursor="View Project"
     >
       <motion.div
         className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl"
@@ -362,6 +363,7 @@ export function Projects() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -10, scale: 1.02 }}
                 className="group relative overflow-hidden rounded-2xl border border-border bg-card/50 backdrop-blur-lg transition-all hover:border-neon-cyan/50 hover:shadow-[0_0_40px_rgba(6,182,212,0.2)]"
+                data-cursor="View"
               >
                 <div className="relative h-48 overflow-hidden">
                   <div

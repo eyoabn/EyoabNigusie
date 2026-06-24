@@ -220,6 +220,7 @@ export function Skills() {
                 onHoverEnd={() => setHoveredSkill(null)}
                 onTouchStart={() => setHoveredSkill(skill.name)}
                 onTouchEnd={() => setHoveredSkill(null)}
+                data-cursor={skill.name}
               >
                 {/* Outer Glow Ring */}
                 <motion.div
@@ -351,6 +352,7 @@ export function Skills() {
               key={stat.label}
               whileHover={{ y: -5, scale: 1.02 }}
               className="group relative overflow-hidden rounded-2xl border border-border bg-card/50 p-6 text-center backdrop-blur-lg transition-all hover:border-neon-cyan/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)]"
+              data-cursor={stat.label}
             >
               <div className={`mb-2 bg-gradient-to-r from-${stat.color} to-transparent bg-clip-text text-4xl text-transparent`}>
                 {stat.value}
