@@ -3,8 +3,6 @@ import { useEffect, useRef, useState } from "react";
 export function CustomCursor() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
-  const ringLabelRef = useRef<HTMLSpanElement>(null);
 
   const [isTouch, setIsTouch] = useState(false);
 
@@ -17,10 +15,8 @@ export function CustomCursor() {
     }
 
     const dot = dotRef.current;
-    const ring = ringRef.current;
-    const ringLabel = ringLabelRef.current;
     const canvas = canvasRef.current;
-    if (!dot || !ring || !ringLabel || !canvas) return;
+    if (!dot || !canvas) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -36,8 +32,6 @@ export function CustomCursor() {
 
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
-    let ringX = mouseX, ringY = mouseY;
-    let animationFrameId: number;
 
     document.body.classList.add('cursor-ready');
 
@@ -48,17 +42,6 @@ export function CustomCursor() {
       spawnTrailPoint(mouseX, mouseY);
     };
     window.addEventListener('mousemove', handleMouseMove);
-
-    // --- Ring: eased follow ---
-    function animateRing() {
-      ringX += (mouseX - ringX) * 0.18;
-      ringY += (mouseY - ringY) * 0.18;
-      if (ring) {
-        ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
-      }
-      animationFrameId = requestAnimationFrame(animateRing);
-    }
-    animateRing();
 
     // --- Trail ---
     const particles: {x: number, y: number, life: number}[] = [];
@@ -95,28 +78,18 @@ export function CustomCursor() {
     }
     drawTrail();
 
-    // Event delegation for hover states
+    // Hide dot or change it when hovering clickable elements
     const handleMouseOver = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest('[data-cursor]');
-      const isClickable = (e.target as HTMLElement).closest('a, button');
-      
-      if (target) {
-        ring.classList.add('is-hovering');
+      const isClickable = (e.target as HTMLElement).closest('[data-cursor], a, button');
+      if (isClickable) {
         document.body.classList.add('cursor-hovering');
-        ringLabel.textContent = target.getAttribute('data-cursor') || '';
-      } else if (isClickable) {
-        ring.classList.add('is-hovering');
-        document.body.classList.add('cursor-hovering');
-        ringLabel.textContent = '';
       }
     };
 
     const handleMouseOut = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest('[data-cursor], a, button');
-      if (target) {
-        ring.classList.remove('is-hovering');
+      const isClickable = (e.target as HTMLElement).closest('[data-cursor], a, button');
+      if (isClickable) {
         document.body.classList.remove('cursor-hovering');
-        ringLabel.textContent = '';
       }
     };
 
@@ -128,7 +101,6 @@ export function CustomCursor() {
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('mouseout', handleMouseOut);
-      cancelAnimationFrame(animationFrameId);
       cancelAnimationFrame(trailFrameId);
       document.body.classList.remove('cursor-ready');
       document.body.classList.remove('cursor-hovering');
@@ -161,51 +133,21 @@ export function CustomCursor() {
           background: var(--neon-cyan);
           pointer-events: none;
           z-index: 9999;
-          transition: opacity .2s ease, transform .15s ease;
+          transition: opacity .2s ease, transform .15s ease, width .2s ease, height .2s ease, margin .2s ease;
           will-change: transform;
         }
 
-        .cursor-ring {
-          position: fixed;
-          top: 0; left: 0;
-          width: 38px; height: 38px;
-          margin: -19px 0 0 -19px;
-          border-radius: 50%;
-          border: 1.5px solid var(--neon-cyan);
-          pointer-events: none;
-          z-index: 9999;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: width .35s cubic-bezier(.22,1,.36,1), height .35s cubic-bezier(.22,1,.36,1),
-                      margin .35s cubic-bezier(.22,1,.36,1), border-color .35s ease,
-                      background-color .35s ease;
-          will-change: transform;
+        /* Make the dot slightly larger and semi-transparent when hovering over links */
+        body.cursor-hovering .cursor-dot {
+          width: 16px;
+          height: 16px;
+          margin: -8px 0 0 -8px;
+          opacity: 0.5;
         }
-
-        .cursor-ring span {
-          opacity: 0;
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 11px;
-          letter-spacing: .04em;
-          color: var(--background);
-          text-transform: uppercase;
-          transition: opacity .2s ease;
-          white-space: nowrap;
-        }
-
-        .cursor-ring.is-hovering {
-          width: 84px; height: 84px;
-          margin: -42px 0 0 -42px;
-          background-color: var(--neon-cyan);
-          border-color: var(--neon-cyan);
-        }
-        .cursor-ring.is-hovering span { opacity: 1; }
-        body.cursor-hovering .cursor-dot { opacity: 0; }
 
         @media (hover: none), (pointer: coarse) {
           body.cursor-ready, body.cursor-ready a, body.cursor-ready button { cursor: auto !important; }
-          #cursor-trail-canvas, .cursor-dot, .cursor-ring { display: none !important; }
+          #cursor-trail-canvas, .cursor-dot { display: none !important; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -214,9 +156,6 @@ export function CustomCursor() {
       `}</style>
       <canvas id="cursor-trail-canvas" ref={canvasRef}></canvas>
       <div className="cursor-dot" id="cursor-dot" ref={dotRef}></div>
-      <div className="cursor-ring" id="cursor-ring" ref={ringRef}>
-        <span id="cursor-ring-label" ref={ringLabelRef}></span>
-      </div>
     </>
   );
 }
