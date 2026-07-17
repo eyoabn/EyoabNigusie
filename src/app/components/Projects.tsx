@@ -37,17 +37,18 @@ const featuredProjects = [
   },
   {
     id: 3,
-    title: "Real-Time Analytics Dashboard",
-    tagline: "Enterprise-grade data visualization",
+    title: "Enjefo Construction",
+    tagline: "Building excellence from the ground up",
     description:
-      "A fast, responsive analytics dashboard built for tracking real-time metrics. Uses WebSockets for live data streaming and D3.js for interactive, easy-to-read charts.",
+      "A modern, full-featured website for Enjefo Construction — a leading construction company based in Addis Ababa, Ethiopia. Showcases the company's services, projects, and expertise with a professional, responsive design.",
     longDescription:
-      "Modern web dashboard with real-time data visualization. Features include customizable widgets, advanced filtering, data export, and responsive design for all screen sizes.",
-    image: "https://images.unsplash.com/photo-1753715613457-63127ec40824?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
-    tags: ["React", "TypeScript", "WebSocket", "D3.js"],
+      "A complete corporate web presence for Enjefo Construction. Features include an elegant hero section, service breakdowns, project portfolio gallery, contact forms, and smooth animations — all optimized for performance and SEO.",
+    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
+    tags: ["Next.js", "TypeScript", "Tailwind CSS", "Vercel"],
     category: "Web",
-    metrics: { users: "Internal", status: "Deployed", type: "Frontend" },
+    metrics: { status: "Live", type: "Full-Stack", deployment: "Vercel" },
     featured: true,
+    live: "https://enjefo-construction-chozhz5rd-eyoabns-projects.vercel.app/",
   },
   {
     id: 4,
