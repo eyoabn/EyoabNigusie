@@ -178,23 +178,25 @@ export function Hero() {
           >
             <motion.a
               href="#projects"
-              className="group flex items-center gap-3 rounded-2xl bg-gradient-to-r from-neon-blue to-neon-cyan px-8 py-4 font-medium text-background transition-all hover:shadow-[0_0_30px_rgba(0,212,255,0.4)]"
+              className="group relative flex items-center gap-2 rounded-full bg-gradient-to-r from-neon-blue to-neon-cyan px-8 py-3 font-medium text-background overflow-hidden transition-all hover:shadow-[0_0_40px_rgba(0,212,255,0.5)]"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span>Explore My Work</span>
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 ease-in-out group-hover:translate-x-full" />
+              <span className="relative z-10">View Projects</span>
+              <ArrowRight className="relative z-10 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </motion.a>
 
             <motion.a
-              href="/Eyoab Nigusie — Curriculum Vitae(finalist).pdf"
-              download="Eyoab Nigusie — Curriculum Vitae(finalist).pdf"
-              className="group flex items-center gap-3 rounded-2xl border border-border bg-card/30 px-8 py-4 font-medium backdrop-blur-md transition-all hover:border-neon-purple hover:bg-neon-purple/10 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]"
+              href="/resume.pdf"
+              download
+              className="group relative flex items-center gap-2 rounded-full border border-neon-purple/40 bg-neon-purple/10 px-8 py-3 font-medium backdrop-blur-md transition-all hover:border-neon-purple/80 hover:bg-neon-purple/20 hover:shadow-[0_0_40px_rgba(168,85,247,0.4)] overflow-hidden"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Download className="h-4 w-4 text-neon-purple transition-transform group-hover:-translate-y-1" />
-              <span className="text-foreground">Download CV</span>
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-neon-purple/20 to-transparent transition-transform duration-700 ease-in-out group-hover:translate-x-full" />
+              <Download className="relative z-10 h-4 w-4 text-neon-purple" />
+              <span className="relative z-10 text-neon-purple">Download CV</span>
             </motion.a>
           </motion.div>
 

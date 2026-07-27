@@ -98,7 +98,7 @@ export function About() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="group relative overflow-hidden rounded-3xl border border-border bg-card/50 p-8 backdrop-blur-lg transition-all hover:border-neon-blue/50 hover:shadow-[0_0_40px_rgba(0,212,255,0.2)]"
+            className="group relative overflow-hidden rounded-3xl border border-border/40 bg-card/40 p-8 backdrop-blur-2xl transition-all hover:border-neon-blue/60 hover:shadow-[0_0_50px_rgba(0,212,255,0.25)]"
           >
             <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-neon-blue/10 blur-3xl transition-all group-hover:bg-neon-blue/20" />
             <div className="relative">

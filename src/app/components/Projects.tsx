@@ -48,7 +48,7 @@ const featuredProjects = [
     category: "Web",
     metrics: { status: "Live", type: "Full-Stack", deployment: "Vercel" },
     featured: true,
-    live: "https://enjefo-construction-chozhz5rd-eyoabns-projects.vercel.app/",
+    live: "https://enjefo-construction.vercel.app/",
   },
   {
     id: 4,
@@ -362,27 +362,34 @@ export function Projects() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -10, scale: 1.02 }}
-                className="group relative overflow-hidden rounded-2xl border border-border bg-card/50 backdrop-blur-lg transition-all hover:border-neon-cyan/50 hover:shadow-[0_0_40px_rgba(6,182,212,0.2)]"
+                whileHover={{ y: -10 }}
+                className="group relative overflow-hidden rounded-3xl border border-border/40 bg-card/40 backdrop-blur-2xl transition-all hover:border-neon-cyan/60 hover:shadow-[0_0_50px_rgba(6,182,212,0.15)]"
                 data-cursor="View"
               >
-                <div className="relative h-48 overflow-hidden">
+                <div className="relative h-56 overflow-hidden">
                   <div
-                    className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                    className="h-full w-full bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110"
                     style={{ backgroundImage: `url(${project.image})` }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-70" />
+                  
+                  {/* Subtle Top-Right Arrow for Interaction Cue */}
+                  <div className="absolute right-4 top-4 translate-x-4 -translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neon-cyan/20 backdrop-blur-md">
+                      <ArrowRight className="h-5 w-5 -rotate-45 text-neon-cyan" />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="p-6">
-                  <h4 className="mb-2 text-xl">{project.title}</h4>
-                  <p className="mb-4 text-sm text-muted-foreground">{project.description}</p>
+                <div className="relative p-8">
+                  <h4 className="mb-3 text-2xl font-medium tracking-tight group-hover:text-neon-cyan transition-colors duration-300">{project.title}</h4>
+                  <p className="mb-6 text-sm leading-relaxed text-muted-foreground">{project.description}</p>
 
                   <div className="flex flex-wrap gap-2">
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-lg border border-border bg-muted/50 px-3 py-1 text-xs"
+                        className="rounded-lg border border-border/50 bg-background/50 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur-sm transition-colors duration-300 group-hover:border-neon-cyan/30 group-hover:text-foreground"
                       >
                         {tag}
                       </span>
@@ -390,7 +397,9 @@ export function Projects() {
                   </div>
                 </div>
 
-                <div className="pointer-events-none absolute -bottom-20 -right-20 h-40 w-40 rounded-full bg-neon-cyan/20 blur-3xl transition-all group-hover:bg-neon-cyan/30" />
+                {/* Refined Glow Effects */}
+                <div className="pointer-events-none absolute -bottom-20 -right-20 h-48 w-48 rounded-full bg-neon-cyan/10 blur-[80px] transition-all duration-500 group-hover:bg-neon-cyan/20 group-hover:blur-[100px]" />
+                <div className="pointer-events-none absolute -top-20 -left-20 h-48 w-48 rounded-full bg-neon-purple/5 blur-[80px] transition-all duration-500 group-hover:bg-neon-purple/20 group-hover:blur-[100px]" />
               </motion.div>
             ))}
           </div>
