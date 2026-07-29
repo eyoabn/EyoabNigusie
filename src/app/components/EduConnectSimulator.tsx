@@ -18,14 +18,12 @@ import {
   Plus,
   Sparkles,
   X,
-  Volume2,
   Bell,
   GraduationCap,
   ArrowRight,
   Laptop,
   LogOut,
   CheckCircle2,
-  Trash2,
   Activity,
   Edit2
 } from "lucide-react";
@@ -61,7 +59,7 @@ export default function EduConnectSimulator({ onClose }: { onClose: () => void }
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState<"student" | "teacher">("student");
   const [loginEmail, setLoginEmail] = useState("student@educonnect.edu");
-  const [loginPassword, setLoginPassword] = useState("••••••••");
+  const [loginPassword] = useState("••••••••");
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("Connecting to server...");
   const [currentTab, setCurrentTab] = useState<"home" | "classes" | "chat" | "profile">("home");
