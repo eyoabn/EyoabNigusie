@@ -1,4 +1,4 @@
-import { motion, useMotionValue, useTransform } from "motion/react";
+import { motion } from "motion/react";
 import { useState, useRef, useEffect } from "react";
 
 interface Skill {
@@ -347,7 +347,7 @@ export function Skills() {
             { label: "Categories", value: "6+", color: "neon-blue" },
             { label: "GitHub Commits", value: "1K+", color: "neon-purple" },
             { label: "Projects Built", value: "15+", color: "neon-pink" },
-          ].map((stat, index) => (
+          ].map((stat) => (
             <motion.div
               key={stat.label}
               whileHover={{ y: -5, scale: 1.02 }}

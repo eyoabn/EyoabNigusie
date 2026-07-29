@@ -9,7 +9,15 @@ export function Footer() {
     { icon: Mail, href: "mailto:eyoabnigusie@gmail.com", label: "Email" },
   ];
 
-  const links = {
+  type FooterLink = {
+    name: string;
+    href: string;
+    download?: string;
+    target?: string;
+    rel?: string;
+  };
+
+  const links: Record<string, FooterLink[]> = {
     Navigation: [
       { name: "Home", href: "#" },
       { name: "About", href: "#about" },
