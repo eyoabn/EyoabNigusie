@@ -16,34 +16,56 @@ import { UniverseBackground } from "../components/UniverseBackground";
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "motion/react";
 
-export function Home() {
-  const [loading, setLoading] = useState(true);
+const BOOT_FLAG = "portfolio-boot-shown";
 
-  // Add portfolio-page class so custom cursor CSS applies here only
+function shouldShowBootScreen() {
+  // A 3-second intro is charming once, tedious on every navigation back to the
+  // page — and it's pure decoration to anyone who asked for reduced motion.
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+  try {
+    return sessionStorage.getItem(BOOT_FLAG) !== "1";
+  } catch {
+    return true;
+  }
+}
+
+export function Home() {
+  const [loading, setLoading] = useState(shouldShowBootScreen);
+
+  const finishLoading = () => {
+    setLoading(false);
+    try {
+      sessionStorage.setItem(BOOT_FLAG, "1");
+    } catch {
+      // Non-fatal: the intro just plays again next time.
+    }
+  };
+
   useEffect(() => {
+    // Scopes the custom-cursor CSS to the portfolio page so /admin keeps a normal cursor.
     document.body.classList.add("portfolio-page");
-    document.documentElement.classList.add("dark");
-    document.documentElement.style.scrollBehavior = "smooth";
 
     const handleGlobalClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const anchor = target.closest("a");
-      if (anchor) {
-        const href = anchor.getAttribute("href");
-        // Check if it's a page anchor link (starts with # and is not a route like #/admin)
-        if (href && href.startsWith("#") && !href.startsWith("#/")) {
-          e.preventDefault();
-          const id = href.substring(1);
-          if (id === "") {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          } else {
-            const el = document.getElementById(id);
-            if (el) {
-              el.scrollIntoView({ behavior: "smooth" });
-            }
-          }
-        }
+      // Let modified clicks (new tab, download, etc.) behave normally.
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+        return;
       }
+
+      const anchor = (e.target as HTMLElement).closest("a");
+      if (!anchor) return;
+
+      const href = anchor.getAttribute("href");
+      // Only handle in-page section links: "#about". A bare "#" is a placeholder,
+      // and "#/..." would be a route — neither should hijack the scroll position.
+      if (!href || !href.startsWith("#") || href === "#" || href.startsWith("#/")) return;
+
+      const target = document.getElementById(href.slice(1));
+      if (!target) return;
+
+      e.preventDefault();
+      target.scrollIntoView({ behavior: "smooth" });
+      // Keep the URL shareable and the section focusable for keyboard users.
+      history.replaceState(null, "", href);
     };
 
     window.addEventListener("click", handleGlobalClick);
@@ -57,33 +79,33 @@ export function Home() {
   return (
     <>
       <AnimatePresence mode="wait">
-        {loading && <LoadingScreen onLoadingComplete={() => setLoading(false)} />}
+        {loading && <LoadingScreen onLoadingComplete={finishLoading} />}
       </AnimatePresence>
 
-      {!loading && (
-        <div className="relative min-h-screen bg-background text-foreground">
-          <UniverseBackground />
-          <ScrollProgress />
-          <CustomCursor />
-          <Navigation />
-          <ThemeToggle />
-          <ScrollToTop />
+      {/* The page is always mounted — the loading screen overlays it rather than
+          gating it, so content is painted and crawlable from the first frame. */}
+      <div className="relative min-h-screen bg-background text-foreground">
+        <UniverseBackground />
+        <ScrollProgress />
+        <CustomCursor />
+        <Navigation />
+        <ThemeToggle />
+        <ScrollToTop />
 
-          <main className="relative z-10">
-            <Hero />
-            <About />
-            <Projects />
-            <Skills />
-            <Experience />
-            <Testimonials />
-            <Contact />
-          </main>
+        <main id="main" className="relative z-10">
+          <Hero />
+          <About />
+          <Projects />
+          <Skills />
+          <Experience />
+          <Testimonials />
+          <Contact />
+        </main>
 
-          <div className="relative z-10">
-            <Footer />
-          </div>
+        <div className="relative z-10">
+          <Footer />
         </div>
-      )}
+      </div>
     </>
   );
 }

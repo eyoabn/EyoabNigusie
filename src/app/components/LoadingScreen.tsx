@@ -41,6 +41,25 @@ export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
     return () => clearInterval(timer);
   }, [onLoadingComplete]);
 
+  // The page renders behind this overlay, so scrolling has to be held back
+  // until the boot sequence finishes or is skipped.
+  useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, []);
+
+  // Escape is the conventional "get me out of here" key for a blocking overlay.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onLoadingComplete();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onLoadingComplete]);
+
   useEffect(() => {
     // Update terminal lines based on progress
     const lineIndex = Math.min(
@@ -55,8 +74,18 @@ export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0a0a0a] font-mono"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0a0a0a] px-4 font-mono"
+      role="status"
+      aria-label="Loading portfolio"
     >
+      {/* Nobody should be held hostage by an intro animation. */}
+      <button
+        onClick={onLoadingComplete}
+        className="absolute right-5 top-5 z-20 rounded-full border border-neon-blue/30 px-4 py-1.5 text-xs tracking-wider text-neon-blue/70 transition-colors hover:border-neon-blue hover:text-neon-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
+      >
+        SKIP
+      </button>
+
       {/* Background glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neon-blue/10 via-background to-background" />
 

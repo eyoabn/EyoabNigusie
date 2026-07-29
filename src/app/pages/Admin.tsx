@@ -1,5 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
+import { Link } from "react-router";
+import { toast } from "sonner";
 import { Mail, Calendar, Trash2, RefreshCw, MessageSquare, User, Clock, ArrowLeft, AlertCircle, CheckCircle, Loader2, Eye } from "lucide-react";
 
 interface Message {
@@ -12,6 +14,40 @@ interface Message {
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+const CREDENTIAL_KEY = "admin_password";
+
+/**
+ * The admin password is held in sessionStorage rather than localStorage: it is
+ * still readable by script on this origin, but it dies with the tab instead of
+ * persisting on disk indefinitely. Every access is guarded because storage
+ * throws in private mode and when a browser blocks site data.
+ */
+function readStoredPassword(): string {
+  try {
+    return sessionStorage.getItem(CREDENTIAL_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+function storePassword(value: string) {
+  try {
+    sessionStorage.setItem(CREDENTIAL_KEY, value);
+  } catch {
+    // Non-fatal: the session just won't survive a reload.
+  }
+}
+
+function clearStoredPassword() {
+  try {
+    sessionStorage.removeItem(CREDENTIAL_KEY);
+    // Clean up any password left behind on disk by an earlier version.
+    localStorage.removeItem(CREDENTIAL_KEY);
+  } catch {
+    // Non-fatal.
+  }
+}
+
 export function Admin() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,15 +57,15 @@ export function Admin() {
   const [deleting, setDeleting] = useState(false);
 
   // Authentication States
-  const [password, setPassword] = useState(localStorage.getItem("admin_password") || "");
+  const [password, setPassword] = useState(readStoredPassword);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [inputPassword, setInputPassword] = useState("");
 
-  // Ensure dark mode and normal cursor on admin page
+  // The admin page uses the system cursor, not the portfolio's custom one.
   useEffect(() => {
-    document.documentElement.classList.add("dark");
+    document.title = "Admin Dashboard | Eyoab Nigusie";
     document.body.style.cursor = "auto";
     return () => {
       document.body.style.cursor = "";
@@ -49,7 +85,7 @@ export function Admin() {
       
       if (res.status === 401) {
         setIsAuthenticated(false);
-        localStorage.removeItem("admin_password");
+        clearStoredPassword();
         throw new Error("UNAUTHORIZED");
       }
       
@@ -59,7 +95,7 @@ export function Admin() {
       
       if (passToUse) {
         setIsAuthenticated(true);
-        localStorage.setItem("admin_password", passToUse);
+        storePassword(passToUse);
         setPassword(passToUse);
       } else {
         // If password is empty but server returned 200, it means no ADMIN_PASSWORD is set on the backend.
@@ -79,7 +115,7 @@ export function Admin() {
 
   useEffect(() => {
     const initAuth = async () => {
-      const storedPass = localStorage.getItem("admin_password") || "";
+      const storedPass = readStoredPassword();
       try {
         await fetchMessages(storedPass);
       } catch (err: any) {
@@ -104,16 +140,17 @@ export function Admin() {
       });
       if (res.status === 401) {
         setIsAuthenticated(false);
-        localStorage.removeItem("admin_password");
-        alert("Session expired. Please log in again.");
+        clearStoredPassword();
+        toast.error("Session expired. Please log in again.");
         return;
       }
       if (!res.ok) throw new Error("Delete failed");
       setMessages((prev) => prev.filter((m) => m._id !== id));
       setDeleteId(null);
       if (selectedMessage?._id === id) setSelectedMessage(null);
+      toast.success("Message deleted");
     } catch {
-      alert("Failed to delete message.");
+      toast.error("Failed to delete message.");
     } finally {
       setDeleting(false);
     }
@@ -214,13 +251,13 @@ export function Admin() {
           </form>
 
           <div className="mt-8 text-center">
-            <a
-              href="#/"
+            <Link
+              to="/"
               className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="h-3 w-3" />
               Back to Portfolio
-            </a>
+            </Link>
           </div>
         </motion.div>
       </div>
@@ -239,13 +276,13 @@ export function Admin() {
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <a
-              href="#/"
+            <Link
+              to="/"
               className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Portfolio
-            </a>
+            </Link>
             <div className="h-4 w-px bg-border" />
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-neon-cyan animate-pulse" />
@@ -270,7 +307,7 @@ export function Admin() {
             </motion.button>
             <motion.button
               onClick={() => {
-                localStorage.removeItem("admin_password");
+                clearStoredPassword();
                 setIsAuthenticated(false);
                 setPassword("");
                 setInputPassword("");
