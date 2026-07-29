@@ -279,11 +279,24 @@ export function Hero() {
 
               {/* Profile image */}
               <div className="relative z-10 h-52 w-52 lg:h-[268px] lg:w-[268px] rounded-full overflow-hidden shadow-2xl">
-                <img
-                  src="/profile.jpg"
-                  alt="Eyoab Nigusie"
-                  className="h-full w-full object-cover object-top"
-                />
+                {/* AVIF (14 KB) and WebP (18 KB) with a JPEG fallback, in place
+                    of the original 317 KB JPEG. */}
+                <picture>
+                  <source srcSet="/profile.avif" type="image/avif" />
+                  <source srcSet="/profile.webp" type="image/webp" />
+                  <img
+                    src="/profile.jpg"
+                    alt="Eyoab Nigusie"
+                    width={268}
+                    height={268}
+                    // Above the fold, so it should start downloading immediately
+                    // rather than waiting for layout.
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                    className="h-full w-full object-cover object-top"
+                  />
+                </picture>
               </div>
 
               {/* Subtle top-left light sheen over photo */}

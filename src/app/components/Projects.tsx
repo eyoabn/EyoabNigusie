@@ -1,7 +1,10 @@
 import { motion, useMotionValue, useTransform, AnimatePresence } from "motion/react";
 import { ExternalLink, Github, ArrowRight, Sparkles } from "lucide-react";
-import { useState, useRef } from "react";
-import EduConnectSimulator from "./EduConnectSimulator";
+import { useState, useRef, lazy, Suspense } from "react";
+
+// ~1,400 lines that only ever render inside a modal — no reason to make every
+// visitor download them up front.
+const EduConnectSimulator = lazy(() => import("./EduConnectSimulator"));
 
 const featuredProjects = [
   {
@@ -439,7 +442,18 @@ export function Projects() {
       
       <AnimatePresence>
         {showEduConnectSimulator && (
-          <EduConnectSimulator onClose={() => setShowEduConnectSimulator(false)} />
+          <Suspense
+            fallback={
+              <div className="fixed inset-0 z-[60] flex items-center justify-center bg-background/80 backdrop-blur-sm">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="h-10 w-10 animate-spin rounded-full border-2 border-border border-t-neon-cyan" />
+                  <p className="text-sm text-muted-foreground">Loading simulator…</p>
+                </div>
+              </div>
+            }
+          >
+            <EduConnectSimulator onClose={() => setShowEduConnectSimulator(false)} />
+          </Suspense>
         )}
       </AnimatePresence>
     </section>

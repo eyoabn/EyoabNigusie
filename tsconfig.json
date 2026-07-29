@@ -20,8 +20,8 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    /* Path alias — mirrors the `@` alias in vite.config.ts */
-    "baseUrl": ".",
+    /* Path alias — mirrors the `@` alias in vite.config.ts.
+       Resolved relative to this file, so no (deprecated) baseUrl is needed. */
     "paths": {
       "@/*": ["./src/*"]
     }
