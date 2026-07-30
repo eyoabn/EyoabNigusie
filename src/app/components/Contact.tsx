@@ -3,8 +3,7 @@ import { Mail, MapPin, Phone, Send, Check, AlertCircle } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "../lib/utils";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import { API_URL } from "../lib/api";
 
 // Mirrors the server-side limits in backend/server.js so the visitor gets
 // feedback instantly instead of a round trip and a generic error.
