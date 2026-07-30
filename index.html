@@ -12,6 +12,11 @@
     <meta name="author" content="Eyoab Nigusie" />
     <link rel="canonical" href="https://portfolio-1q1t.onrender.com/" />
 
+    <!-- Project images live on Unsplash. Opening the connection here overlaps DNS
+         and TLS with bundle parsing instead of waiting until React asks for them. -->
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+    <link rel="dns-prefetch" href="https://images.unsplash.com" />
+
     <!-- Favicon: inline SVG so there's no extra request and it scales cleanly. -->
     <link
       rel="icon"

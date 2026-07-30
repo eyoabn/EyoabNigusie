@@ -26,7 +26,13 @@ export function Navigation() {
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else {
         const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: "smooth" });
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+          // Move focus with the scroll, otherwise a keyboard user is scrolled to
+          // the section but their next Tab resumes inside the nav they just left.
+          if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+          el.focus({ preventScroll: true });
+        }
       }
     }
   };
@@ -66,6 +72,7 @@ export function Navigation() {
       animate={{ y: isVisible ? 0 : -100 }}
       transition={{ duration: 0.3 }}
       className="fixed left-0 right-0 top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl cursor-none"
+      aria-label="Main"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         {/* Logo */}
@@ -86,7 +93,9 @@ export function Navigation() {
                 key={item.label}
                 href={item.href}
                 onClick={(e) => handleNavClick(e, item.href)}
-                className="relative text-sm transition-colors"
+                // The colour change alone doesn't reach a screen reader.
+                aria-current={isActive ? "true" : undefined}
+                className="relative rounded text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-4 focus-visible:ring-offset-background"
                 style={{ color: isActive ? "var(--neon-cyan)" : "var(--muted-foreground)" }}
                 whileHover={{ y: -2 }}
               >
@@ -119,17 +128,29 @@ export function Navigation() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden"
-          aria-label="Toggle menu"
+          className="rounded md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="mobile-menu"
         >
           {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
       {/* Mobile Menu */}
+      {/* A collapsed height of 0 hides the links visually but leaves them in the
+          tab order, so focus vanishes into an invisible menu. Flipping visibility
+          once the collapse finishes takes them out of it without losing the
+          animation — visibility can't be hidden during the slide or the menu
+          would disappear instantly instead of sliding away. */}
       <motion.div
-        initial={{ height: 0 }}
-        animate={{ height: isMobileMenuOpen ? "auto" : 0 }}
+        id="mobile-menu"
+        initial={{ height: 0, visibility: "hidden" }}
+        animate={
+          isMobileMenuOpen
+            ? { height: "auto", visibility: "visible" }
+            : { height: 0, transitionEnd: { visibility: "hidden" } }
+        }
         className="overflow-hidden border-t border-border md:hidden"
       >
         <div className="space-y-4 p-4">
@@ -141,7 +162,8 @@ export function Navigation() {
                 handleNavClick(e, item.href);
                 setIsMobileMenuOpen(false);
               }}
-              className="block text-sm transition-colors"
+              aria-current={activeSection === item.id ? "true" : undefined}
+              className="block rounded text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               style={{
                 color:
                   activeSection === item.id

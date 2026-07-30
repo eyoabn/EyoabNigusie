@@ -129,6 +129,18 @@ export function Admin() {
     initAuth();
   }, []);
 
+  // Escape is how people expect to back out of a confirmation dialog. Without it
+  // the only way out is finding the Cancel button, and there is no keyboard route
+  // out at all for anyone who opened it by accident.
+  useEffect(() => {
+    if (!deleteId) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !deleting) setDeleteId(null);
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [deleteId, deleting]);
+
   const handleDelete = async (id: string) => {
     setDeleting(true);
     try {
@@ -216,15 +228,25 @@ export function Admin() {
 
           <form onSubmit={handleLoginSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+              <label
+                htmlFor="admin-password"
+                className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2"
+              >
                 Admin Password
               </label>
               <input
+                id="admin-password"
+                name="password"
                 type="password"
                 value={inputPassword}
                 onChange={(e) => setInputPassword(e.target.value)}
                 placeholder="••••••••"
                 required
+                autoComplete="current-password"
+                // Announces the failure to a screen reader instead of leaving it
+                // as a red box only a sighted user notices.
+                aria-invalid={Boolean(loginError)}
+                aria-describedby={loginError ? "admin-password-error" : undefined}
                 className="w-full rounded-xl border border-border bg-background/50 px-4 py-3 text-sm placeholder:text-muted-foreground/50 focus:border-neon-cyan/50 focus:outline-none focus:ring-1 focus:ring-neon-cyan/50 transition-all"
               />
             </div>
@@ -420,24 +442,29 @@ export function Admin() {
                         <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{msg.message}</p>
                       </div>
                     </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                    {/* Revealed on keyboard focus as well as hover. These buttons
+                        are the only keyboard route into a message — hiding them
+                        from anyone not using a mouse made the list unusable. */}
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity flex-shrink-0">
                       <motion.button
                         onClick={(e) => { e.stopPropagation(); setSelectedMessage(msg); }}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        className="p-1.5 rounded-lg hover:bg-neon-cyan/10 text-neon-cyan transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-neon-cyan/10 text-neon-cyan transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
+                        aria-label={`View message from ${msg.name}`}
                         title="View message"
                       >
-                        <Eye className="h-4 w-4" />
+                        <Eye className="h-4 w-4" aria-hidden="true" />
                       </motion.button>
                       <motion.button
                         onClick={(e) => { e.stopPropagation(); setDeleteId(msg._id); }}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        className="p-1.5 rounded-lg hover:bg-red-500/10 text-red-400 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-red-500/10 text-red-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                        aria-label={`Delete message from ${msg.name}`}
                         title="Delete message"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
                       </motion.button>
                     </div>
                   </div>
@@ -533,18 +560,26 @@ export function Admin() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="delete-dialog-title"
               className="mx-4 w-full max-w-sm rounded-2xl border border-red-500/30 bg-card p-7 shadow-2xl"
             >
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 mx-auto">
-                <Trash2 className="h-5 w-5 text-red-400" />
+                <Trash2 className="h-5 w-5 text-red-400" aria-hidden="true" />
               </div>
-              <h3 className="text-center text-lg font-semibold mb-2">Delete Message</h3>
+              <h3 id="delete-dialog-title" className="text-center text-lg font-semibold mb-2">
+                Delete Message
+              </h3>
               <p className="text-center text-sm text-muted-foreground mb-6">
                 Are you sure you want to delete this message? This action cannot be undone.
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setDeleteId(null)}
+                  // Focus lands on the non-destructive choice, so a stray Enter
+                  // cancels rather than deletes.
+                  autoFocus
                   className="flex-1 rounded-xl border border-border py-2.5 text-sm hover:bg-card/80 transition-all"
                 >
                   Cancel

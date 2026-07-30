@@ -64,7 +64,19 @@ export function Home() {
 
       e.preventDefault();
       target.scrollIntoView({ behavior: "smooth" });
-      // Keep the URL shareable and the section focusable for keyboard users.
+
+      // Scrolling alone leaves focus behind on the link, so the next Tab carries
+      // on from the navigation rather than from the section the visitor just
+      // jumped to — which would make the skip link do nothing useful. Sections
+      // aren't focusable by default, so give the target a programmatic-only tab
+      // stop first. preventScroll keeps the smooth scroll above from being
+      // overridden by an instant jump.
+      if (!target.hasAttribute("tabindex")) {
+        target.setAttribute("tabindex", "-1");
+      }
+      target.focus({ preventScroll: true });
+
+      // Keep the URL shareable.
       history.replaceState(null, "", href);
     };
 
@@ -84,6 +96,15 @@ export function Home() {
 
       {/* The page is always mounted — the loading screen overlays it rather than
           gating it, so content is painted and crawlable from the first frame. */}
+      {/* Off-screen until focused: the first Tab on the page offers a jump past
+          the navigation instead of making keyboard users walk through it. */}
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-card focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:outline-none focus:ring-2 focus:ring-neon-cyan"
+      >
+        Skip to main content
+      </a>
+
       <div className="relative min-h-screen bg-background text-foreground">
         <UniverseBackground />
         <ScrollProgress />

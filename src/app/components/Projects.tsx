@@ -6,6 +6,22 @@ import { useState, useRef, lazy, Suspense } from "react";
 // visitor download them up front.
 const EduConnectSimulator = lazy(() => import("./EduConnectSimulator"));
 
+/**
+ * Unsplash serves any width of the same photo from its `w` query parameter, so a
+ * single source URL can back a whole srcset. Without one, a card roughly 380px
+ * wide still downloads the 1200px file — several hundred KB per project, paid for
+ * by every visitor on a phone.
+ */
+const IMAGE_WIDTHS = [480, 720, 1080, 1440];
+
+function buildSrcSet(url: string) {
+  if (!/[?&]w=\d+/.test(url)) return undefined;
+  return IMAGE_WIDTHS.map((w) => `${url.replace(/([?&])w=\d+/, `$1w=${w}`)} ${w}w`).join(", ");
+}
+
+// Cards are one column on phones, two on tablets, three on wide screens.
+const IMAGE_SIZES = "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw";
+
 const featuredProjects = [
   {
     id: 1,
@@ -155,15 +171,20 @@ function ProjectCard3D({ project, index, onViewProject }: { project: typeof feat
 
         {/* Image Section */}
         <div className="relative h-64 overflow-hidden md:h-80">
-          <motion.div
-            className="h-full w-full bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${project.image})`,
-              transform: isHovered ? "scale(1.1)" : "scale(1)",
-            }}
+          {/* A real <img> rather than a CSS background: it can be lazy-loaded, it
+              can carry alt text, and it can serve a right-sized file via srcset. */}
+          <motion.img
+            src={project.image}
+            srcSet={buildSrcSet(project.image)}
+            sizes={IMAGE_SIZES}
+            alt={`${project.title} — project preview`}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover object-center"
+            style={{ transform: isHovered ? "scale(1.1)" : "scale(1)" }}
             transition={{ duration: 0.6 }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
 
           {/* Featured Badge */}
           <div className="absolute right-4 top-4">
@@ -370,11 +391,16 @@ export function Projects() {
                 data-cursor="View"
               >
                 <div className="relative h-56 overflow-hidden">
-                  <div
-                    className="h-full w-full bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110"
-                    style={{ backgroundImage: `url(${project.image})` }}
+                  <img
+                    src={project.image}
+                    srcSet={buildSrcSet(project.image)}
+                    sizes={IMAGE_SIZES}
+                    alt={`${project.title} — project preview`}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-70" />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-70" />
                   
                   {/* Subtle Top-Right Arrow for Interaction Cue */}
                   <div className="absolute right-4 top-4 translate-x-4 -translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100">

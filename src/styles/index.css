@@ -7,6 +7,22 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Long smooth scrolls are a common motion-sickness trigger, so anyone who has
+   asked for reduced motion gets an instant jump to the section instead. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Section headings and <main> are given tabindex="-1" on the fly so in-page
+   links can move focus along with the scroll. They are focus targets, not
+   controls, so they shouldn't paint a focus ring around a whole section —
+   the scroll position is the visible feedback. Real controls are unaffected. */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;

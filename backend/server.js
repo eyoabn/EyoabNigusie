@@ -21,19 +21,23 @@ app.set('trust proxy', 1);
 
 app.use(helmet());
 
-// Allowed origins come from the environment so a redeploy doesn't need a code change.
-// ALLOWED_ORIGINS=https://your-site.com,https://www.your-site.com
-const DEFAULT_ORIGINS = ['http://localhost:5173', 'http://localhost:4173', 'http://localhost:3000'];
+// The site's own front end is baked in rather than left to configuration. An
+// unset ALLOWED_ORIGINS previously collapsed the allowlist to localhost, which
+// silently 403'd every real visitor's contact form and the admin dashboard —
+// the deployment kept reporting healthy while nothing worked in a browser.
+const SITE_ORIGINS = ['https://portfolio-1q1t.onrender.com'];
+
+// Local dev servers are only trusted outside production.
+const DEV_ORIGINS = ['http://localhost:5173', 'http://localhost:4173', 'http://localhost:3000'];
+
+// Extra origins (a custom domain, a preview deploy) can still be added without a
+// code change: ALLOWED_ORIGINS=https://example.com,https://www.example.com
 const configuredOrigins = (process.env.ALLOWED_ORIGINS || '')
   .split(',')
-  .map((o) => o.trim())
+  .map((o) => o.trim().replace(/\/$/, '')) // a trailing slash never matches an Origin header
   .filter(Boolean);
 
-const originList = configuredOrigins.length ? configuredOrigins : DEFAULT_ORIGINS;
-
-if (!configuredOrigins.length && IS_PROD) {
-  console.warn('⚠️  ALLOWED_ORIGINS is not set — falling back to localhost only. Production requests will be blocked.');
-}
+const originList = [...new Set([...SITE_ORIGINS, ...configuredOrigins, ...(IS_PROD ? [] : DEV_ORIGINS)])];
 
 app.use(
   cors({
@@ -41,6 +45,10 @@ app.use(
       // No Origin header = same-origin, curl, or a health check. Allow those.
       if (!origin) return callback(null, true);
       if (originList.includes(origin)) return callback(null, true);
+
+      // Log the rejection: a blocked origin is otherwise invisible on the server
+      // and shows up only as an opaque CORS failure in the visitor's console.
+      console.warn(`CORS: rejected origin ${origin}. Allowed: ${originList.join(', ')}`);
       return callback(new Error(`CORS: origin ${origin} is not allowed`));
     },
     methods: ['GET', 'POST', 'DELETE'],
@@ -50,6 +58,15 @@ app.use(
 
 // Cap the body size — a contact message never needs more than a few KB.
 app.use(express.json({ limit: '10kb' }));
+
+// Malformed JSON is the client's mistake, not the server's. Without this the
+// body-parser SyntaxError falls through to the catch-all handler and reports 500.
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({ error: 'Request body is not valid JSON.' });
+  }
+  return next(err);
+});
 
 // ---------------------------------------------------------------------------
 // Rate limiting
@@ -77,14 +94,31 @@ const adminLimiter = rateLimit({
 
 if (process.env.MONGO_URI) {
   mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ MongoDB connected successfully'))
-    .catch((err) => console.error('❌ MongoDB connection error:', err));
+    .connect(process.env.MONGO_URI, {
+      // Fail fast instead of letting a request hang for the 30s default while
+      // the driver hunts for a reachable replica set member.
+      serverSelectionTimeoutMS: 8000,
+    })
+    .catch((err) => console.error('❌ MongoDB initial connection error:', err.message));
+
+  // Connection state changes after startup (Atlas failover, a dropped network)
+  // are otherwise silent, which makes "it worked yesterday" impossible to debug.
+  mongoose.connection.on('connected', () => console.log('✅ MongoDB connected'));
+  mongoose.connection.on('disconnected', () => console.warn('⚠️  MongoDB disconnected'));
+  mongoose.connection.on('error', (err) => console.error('❌ MongoDB error:', err.message));
 } else {
   console.warn('WARNING: MONGO_URI is not defined in .env file.');
 }
 
 const Contact = require('./models/Contact');
+
+/**
+ * Whether a query can actually run right now. Checking the live connection state
+ * rather than "is MONGO_URI set" matters: with the URI present but the socket
+ * down, mongoose buffers the query and the visitor waits for a timeout before
+ * getting an error, instead of being told immediately.
+ */
+const dbReady = () => mongoose.connection.readyState === 1;
 
 // ---------------------------------------------------------------------------
 // Auth
@@ -153,11 +187,46 @@ function validateContact(body) {
 }
 
 // ---------------------------------------------------------------------------
+// Mail
+// ---------------------------------------------------------------------------
+
+const MAIL_ENABLED = Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+
+// Built once and reused. The previous code created a transporter per request,
+// which meant a fresh SMTP handshake for every message instead of a pooled one.
+const transporter = MAIL_ENABLED
+  ? nodemailer.createTransport({
+      service: 'gmail',
+      pool: true,
+      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+    })
+  : null;
+
+// ---------------------------------------------------------------------------
 // Routes
 // ---------------------------------------------------------------------------
 
 app.get('/', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Portfolio Backend API is running successfully!' });
+});
+
+/**
+ * Reports what is actually wired up. This exists because the failure that broke
+ * the live site — a missing origin in the allowlist — looked identical to a
+ * healthy server from the outside: `/` returned 200 the whole time.
+ * Deliberately lists no secrets, only whether each piece is configured.
+ */
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    uptimeSeconds: Math.round(process.uptime()),
+    database: process.env.MONGO_URI ? (dbReady() ? 'connected' : 'disconnected') : 'not configured',
+    adminConfigured: Boolean(process.env.ADMIN_PASSWORD),
+    emailConfigured: MAIL_ENABLED,
+    allowedOrigins: originList,
+    requestOrigin: req.headers.origin || null,
+    originAllowed: !req.headers.origin || originList.includes(req.headers.origin),
+  });
 });
 
 // POST - Submit a contact message
@@ -177,23 +246,32 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
 
     const { name, email, message } = value;
 
-    if (process.env.MONGO_URI) {
+    let stored = false;
+    if (dbReady()) {
       await new Contact({ name, email, message }).save();
+      stored = true;
     } else {
-      console.log('Received contact submission (No DB connected):', { name, email });
+      // Never drop the message on the floor. If the database is unreachable the
+      // submission still has to reach a human, so it goes to the log and, when
+      // mail is configured, out by email below.
+      console.warn('Contact submission received while the database was unavailable:', {
+        name,
+        email,
+        message,
+      });
     }
 
-    // Email is best-effort: the message is already stored, so a mail failure
-    // must not turn into a failed request for the visitor.
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
+    // A message that was never stored has exactly one delivery path left, so
+    // losing the email too would lose the message entirely.
+    if (!stored && !MAIL_ENABLED) {
+      return res
+        .status(503)
+        .json({ error: 'The message service is temporarily unavailable. Please email me directly.' });
+    }
 
+    // Email is best-effort when the message is already stored: a mail failure
+    // must not turn into a failed request for the visitor.
+    if (transporter) {
       try {
         await transporter.sendMail({
           from: process.env.EMAIL_USER,
@@ -205,6 +283,14 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
         console.log('Email notification sent successfully');
       } catch (emailError) {
         console.error('Failed to send email notification:', emailError.message);
+
+        // With no stored copy, the email was the only delivery path. Telling the
+        // visitor it succeeded would quietly lose their message.
+        if (!stored) {
+          return res
+            .status(503)
+            .json({ error: 'The message service is temporarily unavailable. Please email me directly.' });
+        }
       }
     }
 
@@ -218,7 +304,7 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
 // GET - Fetch all contact messages (admin dashboard)
 app.get('/api/contact', adminLimiter, adminAuth, async (req, res) => {
   try {
-    if (!process.env.MONGO_URI) {
+    if (!dbReady()) {
       return res.status(503).json({ error: 'Database not connected' });
     }
     const messages = await Contact.find().sort({ createdAt: -1 }).limit(500);
@@ -232,6 +318,10 @@ app.get('/api/contact', adminLimiter, adminAuth, async (req, res) => {
 // DELETE - Remove a contact message by ID
 app.delete('/api/contact/:id', adminLimiter, adminAuth, async (req, res) => {
   try {
+    if (!dbReady()) {
+      return res.status(503).json({ error: 'Database not connected' });
+    }
+
     const { id } = req.params;
 
     // Reject malformed ids before they reach the driver.
@@ -266,4 +356,12 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
+
+  // Print the effective configuration at boot. Every one of these was previously
+  // guessable only by making a request and interpreting the failure.
+  console.log(`   env             : ${process.env.NODE_ENV || 'development'}`);
+  console.log(`   allowed origins : ${originList.join(', ')}`);
+  console.log(`   database        : ${process.env.MONGO_URI ? 'configured' : 'NOT configured'}`);
+  console.log(`   admin dashboard : ${process.env.ADMIN_PASSWORD ? 'enabled' : 'DISABLED (ADMIN_PASSWORD unset)'}`);
+  console.log(`   email notices   : ${MAIL_ENABLED ? 'enabled' : 'disabled'}`);
 });
