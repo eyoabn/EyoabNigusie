@@ -120,6 +120,29 @@ const Contact = require('./models/Contact');
  */
 const dbReady = () => mongoose.connection.readyState === 1;
 
+/**
+ * A 503 that says which of the two database problems this is, with a stable
+ * `code` the dashboard can branch on. The distinction matters because the fixes
+ * differ: MONGO_URI missing from the host environment is a deploy-settings
+ * change, while an unreachable cluster is an Atlas status or IP-allowlist issue.
+ * Reporting both as a bare "Database not connected" is what made a backend
+ * misconfiguration look like a broken admin page.
+ */
+function respondDbUnavailable(res) {
+  if (!process.env.MONGO_URI) {
+    return res.status(503).json({
+      error:
+        'The database is not configured on this server. Set MONGO_URI in the host environment and redeploy.',
+      code: 'DB_NOT_CONFIGURED',
+    });
+  }
+  return res.status(503).json({
+    error:
+      'The database is currently unreachable. Check the cluster status and that this server’s IP is allowed.',
+    code: 'DB_UNAVAILABLE',
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Auth
 // ---------------------------------------------------------------------------
@@ -144,12 +167,15 @@ const adminAuth = (req, res, next) => {
 
   if (!adminPassword) {
     console.error('ADMIN_PASSWORD is not set — admin endpoints are disabled.');
-    return res.status(503).json({ error: 'Admin access is not configured on this server.' });
+    return res.status(503).json({
+      error: 'Admin access is not configured on this server. Set ADMIN_PASSWORD and redeploy.',
+      code: 'ADMIN_NOT_CONFIGURED',
+    });
   }
 
   const clientPassword = req.headers['x-admin-password'];
   if (!clientPassword || !safeEqual(clientPassword, adminPassword)) {
-    return res.status(401).json({ error: 'Unauthorized: Invalid admin password.' });
+    return res.status(401).json({ error: 'Unauthorized: Invalid admin password.', code: 'INVALID_PASSWORD' });
   }
 
   next();
@@ -266,7 +292,10 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
     if (!stored && !MAIL_ENABLED) {
       return res
         .status(503)
-        .json({ error: 'The message service is temporarily unavailable. Please email me directly.' });
+        .json({
+          error: 'The message service is temporarily unavailable. Please email me directly.',
+          code: 'MESSAGE_SERVICE_UNAVAILABLE',
+        });
     }
 
     // Email is best-effort when the message is already stored: a mail failure
@@ -289,7 +318,10 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
         if (!stored) {
           return res
             .status(503)
-            .json({ error: 'The message service is temporarily unavailable. Please email me directly.' });
+            .json({
+          error: 'The message service is temporarily unavailable. Please email me directly.',
+          code: 'MESSAGE_SERVICE_UNAVAILABLE',
+        });
         }
       }
     }
@@ -305,7 +337,7 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
 app.get('/api/contact', adminLimiter, adminAuth, async (req, res) => {
   try {
     if (!dbReady()) {
-      return res.status(503).json({ error: 'Database not connected' });
+      return respondDbUnavailable(res);
     }
     const messages = await Contact.find().sort({ createdAt: -1 }).limit(500);
     res.status(200).json(messages);
@@ -319,7 +351,7 @@ app.get('/api/contact', adminLimiter, adminAuth, async (req, res) => {
 app.delete('/api/contact/:id', adminLimiter, adminAuth, async (req, res) => {
   try {
     if (!dbReady()) {
-      return res.status(503).json({ error: 'Database not connected' });
+      return respondDbUnavailable(res);
     }
 
     const { id } = req.params;

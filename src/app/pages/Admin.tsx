@@ -48,6 +48,56 @@ function clearStoredPassword() {
   }
 }
 
+/** Carries the server's own explanation so the UI can report the real cause. */
+class ApiError extends Error {
+  status: number;
+  code?: string;
+
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.code = code;
+  }
+}
+
+/**
+ * Reads the server's `{ error, code }` body off a failed response. That body is
+ * the only thing that separates "wrong password" from "the database is not
+ * configured" — the previous code threw it away and reported the bare status,
+ * so a backend misconfiguration surfaced as "check your internet connection"
+ * and sent anyone debugging it in the wrong direction entirely.
+ */
+async function toApiError(res: Response): Promise<ApiError> {
+  let serverMessage = "";
+  let code: string | undefined;
+  try {
+    const body = await res.json();
+    if (body && typeof body.error === "string") serverMessage = body.error;
+    if (body && typeof body.code === "string") code = body.code;
+  } catch {
+    // A non-JSON body (proxy error page, empty 502) leaves only the status.
+  }
+  return new ApiError(serverMessage || `Server responded with ${res.status}.`, res.status, code);
+}
+
+/** Turns any thrown value into text worth showing a human. */
+function describeError(err: unknown): string {
+  if (err instanceof ApiError) {
+    if (err.status === 429) {
+      return `${err.message} The API allows a limited number of admin requests per 15 minutes — wait a few minutes before retrying.`;
+    }
+    return err.message;
+  }
+  // fetch() rejects with a TypeError when the request never got a reply at all:
+  // DNS failure, refused connection, or a CORS block. There is no server message
+  // to report in that case, so name the things actually worth checking.
+  return "Could not reach the backend API. It may be asleep, offline, or blocking this origin via CORS.";
+}
+
+/** Database problems mean the password was already accepted upstream. */
+const DB_ERROR_CODES = ["DB_NOT_CONFIGURED", "DB_UNAVAILABLE"];
+
 export function Admin() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,30 +133,30 @@ export function Admin() {
         }
       });
       
-      if (res.status === 401) {
+      if (!res.ok) throw await toApiError(res);
+
+      const data = await res.json();
+      setMessages(Array.isArray(data) ? data : []);
+      setIsAuthenticated(true);
+      storePassword(passToUse);
+      setPassword(passToUse);
+    } catch (err) {
+      const apiError = err instanceof ApiError ? err : null;
+
+      if (apiError?.status === 401) {
         setIsAuthenticated(false);
         clearStoredPassword();
-        throw new Error("UNAUTHORIZED");
-      }
-      
-      if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-      const data = await res.json();
-      setMessages(data);
-      
-      if (passToUse) {
+      } else if (passToUse && apiError && DB_ERROR_CODES.includes(apiError.code ?? "")) {
+        // The server checks the password before it touches the database, so a
+        // database error proves the password was correct. Keep the session and
+        // report the outage on the dashboard rather than bouncing back to a
+        // login form that cannot accept anything until the backend is fixed.
         setIsAuthenticated(true);
         storePassword(passToUse);
         setPassword(passToUse);
-      } else {
-        // If password is empty but server returned 200, it means no ADMIN_PASSWORD is set on the backend.
-        setIsAuthenticated(true);
       }
-    } catch (err: any) {
-      if (err.message === "UNAUTHORIZED") {
-        setError("Invalid admin password.");
-      } else {
-        setError(err.message || "Could not connect to the backend server. Make sure it is running.");
-      }
+
+      setError(describeError(err));
       throw err;
     } finally {
       setLoading(false);
@@ -116,17 +166,25 @@ export function Admin() {
   useEffect(() => {
     const initAuth = async () => {
       const storedPass = readStoredPassword();
+
+      // With nothing stored this request is a guaranteed 401 — the server refuses
+      // an empty password — and it still spends one of the API's 20-per-15-minutes
+      // admin attempts on every page load. Go straight to the login form.
+      if (!storedPass) {
+        setLoading(false);
+        setCheckingAuth(false);
+        return;
+      }
+
       try {
         await fetchMessages(storedPass);
-      } catch (err: any) {
-        if (err.message !== "UNAUTHORIZED") {
-          setIsAuthenticated(!!storedPass);
-        }
+      } catch {
+        // fetchMessages has already classified the failure and set the UI state.
       } finally {
         setCheckingAuth(false);
       }
     };
-    initAuth();
+    void initAuth();
   }, []);
 
   // Escape is how people expect to back out of a confirmation dialog. Without it
@@ -150,19 +208,24 @@ export function Admin() {
           'x-admin-password': password
         }
       });
-      if (res.status === 401) {
-        setIsAuthenticated(false);
-        clearStoredPassword();
-        toast.error("Session expired. Please log in again.");
-        return;
+      if (!res.ok) {
+        const apiError = await toApiError(res);
+        if (apiError.status === 401) {
+          setIsAuthenticated(false);
+          clearStoredPassword();
+          toast.error("Session expired. Please log in again.");
+          return;
+        }
+        throw apiError;
       }
-      if (!res.ok) throw new Error("Delete failed");
       setMessages((prev) => prev.filter((m) => m._id !== id));
       setDeleteId(null);
       if (selectedMessage?._id === id) setSelectedMessage(null);
       toast.success("Message deleted");
-    } catch {
-      toast.error("Failed to delete message.");
+    } catch (err) {
+      // Report why it failed. A flat "Failed to delete message." hid the one
+      // detail that would explain it, e.g. that the database went away.
+      toast.error(describeError(err));
     } finally {
       setDeleting(false);
     }
@@ -173,11 +236,13 @@ export function Admin() {
     setLoginError(null);
     try {
       await fetchMessages(inputPassword);
-    } catch (err: any) {
-      if (err.message === "UNAUTHORIZED") {
+    } catch (err) {
+      // Only a 401 means the password was wrong. Everything else is a server or
+      // network problem, and saying so verbatim is what lets it be diagnosed.
+      if (err instanceof ApiError && err.status === 401) {
         setLoginError("Incorrect password. Please try again.");
       } else {
-        setLoginError("Failed to connect. Check your server or internet connection.");
+        setLoginError(describeError(err));
       }
     }
   };
