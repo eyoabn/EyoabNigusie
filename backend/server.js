@@ -21,11 +21,9 @@ app.set('trust proxy', 1);
 
 app.use(helmet());
 
-// The site's own front end is baked in rather than left to configuration. An
-// unset ALLOWED_ORIGINS previously collapsed the allowlist to localhost, which
-// silently 403'd every real visitor's contact form and the admin dashboard —
-// the deployment kept reporting healthy while nothing worked in a browser.
-const SITE_ORIGINS = ['https://portfolio-1q1t.onrender.com'];
+// The site's own front end should be passed via ALLOWED_ORIGINS in the .env file
+// instead of hardcoding it here.
+const SITE_ORIGINS = [];
 
 // Local dev servers are only trusted outside production.
 const DEV_ORIGINS = ['http://localhost:5173', 'http://localhost:4173', 'http://localhost:3000'];
