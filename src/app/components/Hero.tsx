@@ -3,21 +3,21 @@ import { ArrowRight, Github, Linkedin, Mail, Download } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
 const roles = [
-  "Software Engineer",
-  "AI/ML Engineer",
-  "Flutter Developer",
   "Full-Stack Developer",
-  "Open Source Contributor",
+  "Flutter Developer",
+  "Mobile App Engineer",
+  "Software Engineer",
+  "Web Developer",
 ];
 
 const floatingTech = [
-  { label: "Python", color: "#06b6d4", angle: 0 },
+  { label: "Node.js", color: "#ec4899", angle: 0 },
   { label: "React", color: "#00d4ff", angle: 45 },
   { label: "Flutter", color: "#a855f7", angle: 90 },
-  { label: "TensorFlow", color: "#ec4899", angle: 135 },
+  { label: "Firebase", color: "#f59e0b", angle: 135 },
   { label: "TypeScript", color: "#00d4ff", angle: 180 },
   { label: "Docker", color: "#06b6d4", angle: 225 },
-  { label: "AWS", color: "#a855f7", angle: 270 },
+  { label: "PostgreSQL", color: "#a855f7", angle: 270 },
   { label: "Next.js", color: "#ec4899", angle: 315 },
 ];
 
@@ -128,7 +128,7 @@ export function Hero() {
               whileHover={{ scale: 1.05 }}
             >
               <span className="bg-gradient-to-r from-neon-blue to-neon-cyan bg-clip-text text-xs font-bold uppercase tracking-widest text-transparent">
-                Software Engineer
+                Full-Stack & Flutter Engineer
               </span>
             </motion.div>
           </div>
@@ -166,7 +166,7 @@ export function Hero() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            Crafting innovative solutions with AI, Machine Learning & Modern Web Technologies. Turning complex problems into elegant digital experiences.
+            Crafting high-performance web applications and beautiful cross-platform mobile experiences. Turning complex problems into elegant, scalable digital products from frontend to backend.
           </motion.p>
 
           {/* CTA Buttons - More distinctive styling */}
