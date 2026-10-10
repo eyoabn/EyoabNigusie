@@ -85,6 +85,38 @@ const featuredProjects = [
     live: "https://kefit-job-matching-platform-1.onrender.com/",
     github: "https://github.com/eyoabn/kefit-job-matching-platform",
   },
+  {
+    id: 9,
+    title: "Arenguade Eco Paper (Green Bag)",
+    tagline: "Sustainable Packaging & Craft Academy",
+    description:
+      "A complete e-commerce and portfolio platform for Addis Ababa's premier manufacturer of biodegradable artisan kraft bags.",
+    longDescription:
+      "Full-stack web application featuring a stunning UI with a 360° interactive 3D studio. Allows users to order bespoke packaging, view client portfolios, and enroll in paper-making masterclasses.",
+    image: "https://images.unsplash.com/photo-1605600659873-d808a1d85f8a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
+    tags: ["Next.js", "Tailwind CSS", "Three.js", "Full-Stack"],
+    category: "Web",
+    metrics: { status: "Live", type: "Full-Stack", deployment: "Vercel" },
+    featured: true,
+    live: "https://green-bag-five.vercel.app/",
+    github: "https://github.com/eyoabn/green-bag",
+  },
+  {
+    id: 10,
+    title: "Based Education (Spiritual Academy)",
+    tagline: "Next-Gen Unlimited Live Learning Platform",
+    description:
+      "An advanced e-learning platform offering live teachings, bible studies, and a sacred community for believers.",
+    longDescription:
+      "A comprehensive full-stack Next.js application featuring secure user authentication, role-based dashboards, live class integrations, and a beautiful premium dark-mode UI.",
+    image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
+    tags: ["Next.js", "React", "Tailwind CSS", "Full-Stack"],
+    category: "Web",
+    metrics: { status: "Live", type: "Full-Stack", deployment: "Vercel" },
+    featured: true,
+    live: "https://based-education.vercel.app/",
+    github: "https://github.com/eyoabn/based-education",
+  },
 ];
 
 const otherProjects = [
