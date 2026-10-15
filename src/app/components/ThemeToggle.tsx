@@ -16,7 +16,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={cycleTheme}
-      className="group fixed right-6 top-6 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card/60 backdrop-blur-lg transition-all hover:scale-110 hover:border-neon-cyan hover:shadow-[0_0_20px_rgba(6,182,212,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background md:right-8 md:top-8"
+      className="group fixed right-4 top-3.5 z-[60] flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card/70 backdrop-blur-lg transition-all hover:scale-110 hover:border-neon-cyan hover:shadow-[0_0_20px_rgba(6,182,212,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background md:right-6 md:top-3.5 md:h-11 md:w-11 cursor-pointer"
       aria-label={`${LABELS[theme]}. Click to switch.`}
       title={LABELS[theme]}
     >

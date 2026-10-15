@@ -49,12 +49,12 @@ function AnimatedStat({
 }
 
 export function About() {
-  const skills = [
-    { name: "Python", level: 95 },
-    { name: "Flutter/Dart", level: 90 },
-    { name: "Machine Learning", level: 88 },
-    { name: "React/TypeScript", level: 92 },
-    { name: "Cloud Architecture", level: 85 },
+  const competencies = [
+    { name: "Full-Stack Web (React / TypeScript / Node)", tier: "Primary Stack", focus: "High-performance UIs & REST APIs", color: "#00d4ff" },
+    { name: "Cross-Platform Mobile (Flutter & Dart)", tier: "Production Ready", focus: "Clean Architecture & State Management", color: "#a855f7" },
+    { name: "Backend Systems & Database Design", tier: "Core Focus", focus: "MongoDB, Express, Auth & Security", color: "#06b6d4" },
+    { name: "Applied AI & Python Pipelines", tier: "Applied Focus", focus: "FastAPI, ML Models & Data Analytics", color: "#ec4899" },
+    { name: "Cloud Deployment & DevOps", tier: "Active Workflow", focus: "Vercel, Render, Git CI/CD & Docker", color: "#00d4ff" },
   ];
 
   const highlights = [
@@ -103,7 +103,7 @@ export function About() {
             <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-neon-blue/10 blur-3xl transition-all group-hover:bg-neon-blue/20" />
             <div className="relative">
               <div className="mb-6 flex items-center gap-6">
-                {/* Profile Image Placeholder with gradient avatar */}
+                {/* Profile Image with gradient avatar */}
                 <div className="relative h-24 w-24 flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
                   <div className="h-24 w-24 overflow-hidden rounded-2xl border-2 border-neon-blue/30 bg-gradient-to-br from-neon-blue/30 to-neon-purple/30 shadow-[0_0_20px_rgba(0,212,255,0.3)] flex items-center justify-center p-0.5">
                     <img src="/profile.jpg" alt="Eyoab Nigusie" className="h-full w-full object-cover rounded-xl" />
@@ -125,10 +125,10 @@ export function About() {
               <div className="mb-6 space-y-4">
                 <p className="leading-relaxed text-muted-foreground">
                   Passionate software engineer dedicated to building cutting-edge applications and solving real-world problems.
-                  Specialized in <span className="text-neon-blue font-medium">AI/ML</span>, mobile development with <span className="text-neon-purple font-medium">Flutter</span>, and modern web technologies.
+                  Specialized in <span className="text-neon-blue font-medium">Full-Stack Web</span>, mobile development with <span className="text-neon-purple font-medium">Flutter</span>, and modern scalable architectures.
                 </p>
                 <div className="pl-4 border-l-2 border-neon-cyan/50 text-sm text-muted-foreground/90 italic">
-                  "I thrive on turning complex challenges into elegant, efficient, and user-centric digital experiences."
+                  "I thrive on turning complex technical challenges into elegant, resilient, and user-centric digital experiences."
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4 p-4 rounded-2xl bg-black/20 border border-white/5">
@@ -139,31 +139,42 @@ export function About() {
             </div>
           </motion.div>
 
-          {/* Skills */}
+          {/* Competencies */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="space-y-6"
+            className="space-y-4"
           >
-            {skills.map((skill, index) => (
-              <div key={skill.name}>
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm">{skill.name}</span>
-                  <span className="text-sm text-neon-blue">{skill.level}%</span>
+            <div className="mb-2">
+              <h3 className="text-lg font-semibold tracking-tight">Core Competencies</h3>
+              <p className="text-xs text-muted-foreground">Practical technical proficiencies and production experience</p>
+            </div>
+            {competencies.map((comp, index) => (
+              <motion.div
+                key={comp.name}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group rounded-2xl border border-border/60 bg-card/40 p-4 backdrop-blur-lg transition-all hover:border-neon-blue/40 hover:bg-card/60"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-foreground">{comp.name}</span>
+                  <span
+                    className="rounded-full px-2.5 py-0.5 text-[11px] font-medium border"
+                    style={{
+                      borderColor: `${comp.color}40`,
+                      backgroundColor: `${comp.color}15`,
+                      color: comp.color,
+                    }}
+                  >
+                    {comp.tier}
+                  </span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-muted">
-                  <motion.div
-                    className="h-full rounded-full bg-gradient-to-r from-neon-blue to-neon-purple"
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${skill.level}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.2, delay: index * 0.15, ease: "easeOut" }}
-                    style={{ boxShadow: "0 0 10px rgba(0, 212, 255, 0.5)" }}
-                  />
-                </div>
-              </div>
+                <p className="text-xs text-muted-foreground">{comp.focus}</p>
+              </motion.div>
             ))}
           </motion.div>
         </div>

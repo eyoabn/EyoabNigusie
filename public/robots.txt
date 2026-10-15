@@ -4,4 +4,4 @@ Allow: /
 # The admin dashboard is behind a password and has nothing to index.
 Disallow: /admin
 
-Sitemap: https://portfolio-1q1t.onrender.com/sitemap.xml
+Sitemap: https://eyoabnigusie.vercel.app/sitemap.xml

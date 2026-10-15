@@ -123,16 +123,18 @@ const otherProjects = [
   {
     id: 5,
     title: "E-Commerce Platform",
-    description: "Full-stack solution with advanced features",
+    description: "Full-stack digital store with secure checkout, product catalog search, and admin order management.",
     image: "https://images.unsplash.com/photo-1753715613434-9c7cb58876b9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
-    tags: ["React", "Node.js", "MongoDB"],
+    tags: ["React", "Node.js", "MongoDB", "Express"],
+    link: "https://github.com/eyoabn",
   },
   {
     id: 6,
-    title: "Fitness Tracking App",
-    description: "Track workouts and health metrics",
+    title: "Fitness & Habit Tracker",
+    description: "Cross-platform mobile application to track daily fitness goals, routines, and biometric metrics with offline support.",
     image: "https://images.unsplash.com/photo-1758611970983-ff9f0ec0b0c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
-    tags: ["Flutter", "Firebase", "ML Kit"],
+    tags: ["Flutter", "Dart", "Firebase", "BLoC"],
+    link: "https://github.com/eyoabn",
   },
 ];
 
@@ -299,22 +301,34 @@ function ProjectCard3D({ project, index, onViewProject }: { project: typeof feat
               <ExternalLink className="h-4 w-4 text-neon-cyan" />
             </motion.button>
 
-            <motion.a
-              href={project.github || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 rounded-xl border border-border bg-card/50 px-6 py-3 backdrop-blur-sm transition-all hover:border-neon-blue/50"
-            >
-              <Github className="h-4 w-4" />
-              <span className="text-sm">Source</span>
-            </motion.a>
+            {project.github ? (
+              <motion.a
+                href={project.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 rounded-xl border border-border bg-card/50 px-6 py-3 backdrop-blur-sm transition-all hover:border-neon-blue/50"
+              >
+                <Github className="h-4 w-4" />
+                <span className="text-sm">Source</span>
+              </motion.a>
+            ) : (
+              <div className="flex items-center gap-2 rounded-xl border border-border/40 bg-card/30 px-4 py-3 text-xs text-muted-foreground">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                <span>Proprietary / Client</span>
+              </div>
+            )}
 
             <motion.button
+              onClick={(e) => {
+                e.preventDefault();
+                onViewProject(project.id);
+              }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="ml-auto rounded-full border border-border bg-card/50 p-3 backdrop-blur-sm transition-all hover:border-neon-purple/50 hover:bg-neon-purple/10"
+              aria-label={`View ${project.title}`}
+              className="ml-auto rounded-full border border-border bg-card/50 p-3 backdrop-blur-sm transition-all hover:border-neon-purple/50 hover:bg-neon-purple/10 cursor-pointer"
             >
               <ArrowRight className="h-5 w-5 text-neon-purple" />
             </motion.button>
@@ -412,14 +426,17 @@ export function Projects() {
           <h3 className="mb-8 text-center text-2xl">More Projects</h3>
           <div className="grid gap-6 md:grid-cols-2">
             {otherProjects.map((project, index) => (
-              <motion.div
+              <motion.a
                 key={project.id}
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -10 }}
-                className="group relative overflow-hidden rounded-3xl border border-border/40 bg-card/40 backdrop-blur-2xl transition-all hover:border-neon-cyan/60 hover:shadow-[0_0_50px_rgba(6,182,212,0.15)]"
+                className="group relative block overflow-hidden rounded-3xl border border-border/40 bg-card/40 backdrop-blur-2xl transition-all hover:border-neon-cyan/60 hover:shadow-[0_0_50px_rgba(6,182,212,0.15)] cursor-pointer"
                 data-cursor="View"
               >
                 <div className="relative h-56 overflow-hidden">
@@ -461,7 +478,7 @@ export function Projects() {
                 {/* Refined Glow Effects */}
                 <div className="pointer-events-none absolute -bottom-20 -right-20 h-48 w-48 rounded-full bg-neon-cyan/10 blur-[80px] transition-all duration-500 group-hover:bg-neon-cyan/20 group-hover:blur-[100px]" />
                 <div className="pointer-events-none absolute -top-20 -left-20 h-48 w-48 rounded-full bg-neon-purple/5 blur-[80px] transition-all duration-500 group-hover:bg-neon-purple/20 group-hover:blur-[100px]" />
-              </motion.div>
+              </motion.a>
             ))}
           </div>
         </motion.div>

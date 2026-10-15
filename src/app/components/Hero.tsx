@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useTransform, useSpring } from "motion/react";
-import { ArrowRight, Github, Linkedin, Mail, Download } from "lucide-react";
+import { ArrowRight, Github, Mail, Download } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
 const roles = [
@@ -209,13 +209,13 @@ export function Hero() {
           >
             <div className="h-[2px] w-12 bg-gradient-to-r from-neon-purple to-neon-blue" />
             {[
-              { icon: Github, label: "GitHub", href: "https://github.com/eyoabn" },
-              { icon: Linkedin, label: "LinkedIn", href: "#" },
-              { icon: Mail, label: "Email", href: "mailto:eyoabnigusie@gmail.com" },
-            ].map(({ icon: Icon, label, href }) => (
+              { icon: Github, label: "GitHub", href: "https://github.com/eyoabn", external: true },
+              { icon: Mail, label: "Email", href: "mailto:eyoabnigusie@gmail.com", external: false },
+            ].map(({ icon: Icon, label, href, external }) => (
               <motion.a
                 key={label}
                 href={href}
+                {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                 className="group relative flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-card/30 backdrop-blur-lg transition-all hover:border-neon-blue hover:bg-neon-blue/10"
                 whileHover={{ scale: 1.1, y: -5 }}
                 aria-label={label}

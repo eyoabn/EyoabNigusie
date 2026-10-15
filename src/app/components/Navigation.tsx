@@ -71,7 +71,7 @@ export function Navigation() {
       initial={{ y: -100 }}
       animate={{ y: isVisible ? 0 : -100 }}
       transition={{ duration: 0.3 }}
-      className="fixed left-0 right-0 top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl cursor-none"
+      className="fixed left-0 right-0 top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl"
       aria-label="Main"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
@@ -112,29 +112,31 @@ export function Navigation() {
           })}
         </div>
 
-        {/* Hire Me CTA */}
-        <div className="hidden md:block">
-          <motion.a
-            href="#contact"
-            onClick={(e) => handleNavClick(e, "#contact")}
-            className="rounded-full bg-gradient-to-r from-neon-blue to-neon-cyan px-5 py-2 text-sm font-medium text-background transition-all hover:shadow-[0_0_20px_rgba(0,212,255,0.4)]"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Hire Me
-          </motion.a>
-        </div>
+        {/* Right CTA & Mobile Menu Button */}
+        <div className="flex items-center gap-4">
+          <div className="hidden md:block mr-12">
+            <motion.a
+              href="#contact"
+              onClick={(e) => handleNavClick(e, "#contact")}
+              className="rounded-full bg-gradient-to-r from-neon-blue to-neon-cyan px-5 py-2 text-sm font-medium text-background transition-all hover:shadow-[0_0_20px_rgba(0,212,255,0.4)]"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Hire Me
+            </motion.a>
+          </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="rounded md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-4 focus-visible:ring-offset-background"
-          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={isMobileMenuOpen}
-          aria-controls="mobile-menu"
-        >
-          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+          {/* Mobile Menu Button (offset for theme toggle) */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="rounded md:hidden mr-12 p-1 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
+          >
+            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}

@@ -41,16 +41,14 @@ html {
   background: linear-gradient(180deg, var(--neon-cyan), var(--neon-pink));
 }
 
-/* Custom cursor styles - only apply on portfolio page, not admin */
-@media (min-width: 768px) {
-  body.portfolio-page {
+/* Custom cursor styles - only apply on portfolio page when custom cursor is active and motion is allowed */
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  body.portfolio-page.cursor-ready {
     cursor: none;
   }
 
-  body.portfolio-page a,
-  body.portfolio-page button,
-  body.portfolio-page input,
-  body.portfolio-page textarea {
+  body.portfolio-page.cursor-ready a,
+  body.portfolio-page.cursor-ready button {
     cursor: none;
   }
 }

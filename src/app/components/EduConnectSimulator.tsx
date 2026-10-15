@@ -63,6 +63,14 @@ export default function EduConnectSimulator({ onClose }: { onClose: () => void }
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("Connecting to server...");
   const [currentTab, setCurrentTab] = useState<"home" | "classes" | "chat" | "profile">("home");
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
   
   // App state
   const [activeClassId, setActiveClassId] = useState<number | null>(null);

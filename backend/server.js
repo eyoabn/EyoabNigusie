@@ -21,9 +21,8 @@ app.set('trust proxy', 1);
 
 app.use(helmet());
 
-// The site's own front end should be passed via ALLOWED_ORIGINS in the .env file
-// instead of hardcoding it here.
-const SITE_ORIGINS = [];
+// Production frontend domains trusted by default:
+const SITE_ORIGINS = ['https://eyoabnigusie.vercel.app', 'https://portfolio-1q1t.onrender.com'];
 
 // Local dev servers are only trusted outside production.
 const DEV_ORIGINS = ['http://localhost:5173', 'http://localhost:4173', 'http://localhost:3000'];

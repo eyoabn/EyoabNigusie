@@ -94,6 +94,21 @@ export function Skills() {
     return skill.name === hoveredSkillName || skill.related.includes(hoveredSkillName);
   };
 
+  const [activeCategory, setActiveCategory] = useState<string>("All");
+
+  const statGradients: Record<string, string> = {
+    "neon-cyan": "linear-gradient(135deg, #06b6d4, #00d4ff)",
+    "neon-blue": "linear-gradient(135deg, #00d4ff, #a855f7)",
+    "neon-purple": "linear-gradient(135deg, #a855f7, #ec4899)",
+    "neon-pink": "linear-gradient(135deg, #ec4899, #f43f5e)",
+  };
+
+  const categories = ["All", "Frontend", "Mobile", "Backend", "AI/ML", "Design", "Tools"];
+
+  const filteredSkills = activeCategory === "All"
+    ? skillsData
+    : skillsData.filter((s) => s.category === activeCategory);
+
   return (
     <section id="skills" className="relative px-4 py-32">
       {/* Background Effects */}
@@ -114,19 +129,68 @@ export function Skills() {
             Skills Universe
           </h2>
           <p className="mb-4 text-sm text-muted-foreground">
-            Interactive neural network of expertise • Hover or Tap & Hold a skill to focus its connections (other skills will fade out and back)
+            Interactive neural network of expertise • Hover a skill node to trace its connections
           </p>
           <div className="mx-auto h-1 w-20 rounded-full bg-gradient-to-r from-neon-cyan to-neon-purple" />
         </motion.div>
 
-        {/* Neural Network Visualization */}
+        {/* Mobile View (< md) */}
+        <div className="block md:hidden space-y-6">
+          {/* Category Filter Pills */}
+          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`whitespace-nowrap rounded-xl px-4 py-2 text-xs font-medium transition-all ${
+                  activeCategory === cat
+                    ? "bg-gradient-to-r from-neon-blue to-neon-purple text-background shadow-lg shadow-neon-blue/20"
+                    : "border border-border bg-card/60 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Mobile Skills Grid */}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {filteredSkills.map((skill) => (
+              <div
+                key={skill.name}
+                className="rounded-2xl border border-border/60 bg-card/50 p-4 backdrop-blur-lg"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div
+                    className="h-2.5 w-2.5 rounded-full"
+                    style={{
+                      backgroundColor: getColorClass(skill.color),
+                      boxShadow: `0 0 10px ${getColorClass(skill.color)}`,
+                    }}
+                  />
+                  <span className="text-[10px] text-muted-foreground font-mono">{skill.category}</span>
+                </div>
+                <h4 className="text-sm font-semibold">{skill.name}</h4>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {skill.related.slice(0, 2).map((rel) => (
+                    <span key={rel} className="rounded bg-muted/40 px-1.5 py-0.5 text-[9px] text-muted-foreground">
+                      {rel}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop Neural Network Visualization (>= md) */}
         <motion.div
           ref={containerRef}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="relative mx-auto aspect-[16/10] max-w-6xl overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card/50 to-card/20 backdrop-blur-xl"
+          className="relative mx-auto hidden md:block aspect-[16/10] max-w-6xl overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card/50 to-card/20 backdrop-blur-xl"
         >
           {/* Connection Lines */}
           <svg className="absolute inset-0 h-full w-full">
@@ -293,7 +357,7 @@ export function Skills() {
                       animate={{ opacity: 1, height: "auto" }}
                       className="mt-1 border-t border-border pt-1 text-[10px] text-muted-foreground"
                     >
-                      {skill.category} • {skill.level}% proficiency
+                      {skill.category}
                     </motion.div>
                   )}
                 </motion.div>
@@ -340,7 +404,7 @@ export function Skills() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-12 grid gap-6 md:grid-cols-4"
+          className="mt-12 grid gap-6 grid-cols-2 md:grid-cols-4"
         >
           {[
             { label: "Technologies", value: skillsData.length, color: "neon-cyan" },
@@ -354,7 +418,14 @@ export function Skills() {
               className="group relative overflow-hidden rounded-2xl border border-border bg-card/50 p-6 text-center backdrop-blur-lg transition-all hover:border-neon-cyan/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)]"
               data-cursor={stat.label}
             >
-              <div className={`mb-2 bg-gradient-to-r from-${stat.color} to-transparent bg-clip-text text-4xl text-transparent`}>
+              <div
+                className="mb-2 bg-clip-text text-4xl font-extrabold text-transparent"
+                style={{
+                  backgroundImage: statGradients[stat.color] || statGradients["neon-cyan"],
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
                 {stat.value}
               </div>
               <div className="text-sm text-muted-foreground">{stat.label}</div>
