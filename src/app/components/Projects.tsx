@@ -46,7 +46,7 @@ const featuredProjects = [
       "A complete e-commerce and portfolio platform for Addis Ababa's premier manufacturer of biodegradable artisan kraft bags.",
     longDescription:
       "Full-stack web application featuring a stunning UI with a 360° interactive 3D studio. Allows users to order bespoke packaging, view client portfolios, and enroll in paper-making masterclasses.",
-    image: "https://images.unsplash.com/photo-1588607677420-5ce3f8a47ff0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
+    image: "https://images.unsplash.com/photo-1544816155-12df9643f363?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
     tags: ["Next.js", "Tailwind CSS", "Three.js", "Full-Stack"],
     category: "Web",
     metrics: { status: "Live", type: "Full-Stack", deployment: "Vercel" },
@@ -217,6 +217,11 @@ function ProjectCard3D({ project, index, onViewProject }: { project: typeof feat
             className="h-full w-full object-cover object-center"
             style={{ transform: isHovered ? "scale(1.1)" : "scale(1)" }}
             transition={{ duration: 0.6 }}
+            onError={(e) => {
+              const target = e.currentTarget;
+              target.srcset = "";
+              target.src = "https://images.unsplash.com/photo-1544816155-12df9643f363?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200";
+            }}
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
 
