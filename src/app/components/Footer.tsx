@@ -1,5 +1,4 @@
-import { motion } from "motion/react";
-import { Heart, Github, Mail, CheckCircle2 } from "lucide-react";
+import { Github, Mail, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -49,88 +48,77 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative border-t border-border px-4 py-16">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute left-1/4 bottom-0 h-64 w-64 rounded-full bg-neon-blue/5 blur-[100px]" />
-        <div className="absolute right-1/4 bottom-0 h-64 w-64 rounded-full bg-neon-purple/5 blur-[100px]" />
-      </div>
-
+    <footer className="relative border-t border-border/80 bg-card/40 px-6 py-16 lg:px-12">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
-          {/* Brand */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h3 className="mb-4 bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-2xl tracking-tight text-transparent">
-              Eyoab Nigusie
-            </h3>
-            <p className="mb-6 text-sm text-muted-foreground">
-              Building innovative solutions with cutting-edge technology. Passionate about AI,
-              mobile development, and creating exceptional user experiences.
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-12">
+          
+          {/* Brand & Summary (4 cols) */}
+          <div className="lg:col-span-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-card text-xs font-bold text-foreground">
+                EN
+              </div>
+              <h3 className="text-lg font-bold tracking-tight text-foreground">
+                Eyoab Nigusie
+              </h3>
+            </div>
+            <p className="mb-6 max-w-sm text-sm leading-relaxed text-muted-foreground">
+              Software engineering undergraduate at ASTU focusing on production-ready web platforms and Flutter mobile apps.
             </p>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {socialLinks.map(({ icon: Icon, href, label }) => (
-                <motion.a
+                <a
                   key={label}
                   href={href}
-                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-card/50 backdrop-blur-lg transition-all hover:border-neon-blue hover:shadow-[0_0_15px_rgba(0,212,255,0.3)]"
-                  whileHover={{ scale: 1.1, y: -3 }}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/80 bg-card text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
                   aria-label={label}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <Icon className="h-4 w-4" />
-                </motion.a>
+                </a>
               ))}
             </div>
-          </motion.div>
+          </div>
 
-          {/* Links */}
-          {Object.entries(links).map(([category, items], index) => (
-            <motion.div
-              key={category}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-            >
-              <h4 className="mb-4">{category}</h4>
-              <ul className="space-y-2">
-                {items.map((item) => (
-                  <li key={item.name}>
-                    <motion.a
-                      href={item.href}
-                      download={item.download}
-                      target={item.target}
-                      rel={item.rel}
-                      className="text-sm text-muted-foreground transition-colors hover:text-neon-cyan"
-                      whileHover={{ x: 5 }}
-                    >
-                      {item.name}
-                    </motion.a>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
+          {/* Links (4 cols) */}
+          <div className="grid grid-cols-2 gap-8 lg:col-span-4">
+            {Object.entries(links).map(([category, items]) => (
+              <div key={category}>
+                <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {category}
+                </h4>
+                <ul className="space-y-2">
+                  {items.map((item) => (
+                    <li key={item.name}>
+                      <a
+                        href={item.href}
+                        download={item.download}
+                        target={item.target}
+                        rel={item.rel}
+                        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        {item.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
 
-          {/* Newsletter */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <h4 className="mb-4">Stay Updated</h4>
+          {/* Newsletter (4 cols) */}
+          <div className="lg:col-span-4">
+            <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Stay in Touch
+            </h4>
             <p className="mb-4 text-sm text-muted-foreground">
-              Subscribe to get updates on new projects and articles.
+              Subscribe to occasionally receive updates on new projects and articles.
             </p>
             {subscribed ? (
-              <div className="flex items-center gap-2 rounded-xl border border-neon-cyan/40 bg-neon-cyan/10 p-3 text-sm text-neon-cyan">
-                <CheckCircle2 className="h-5 w-5 shrink-0" />
-                <span>Subscribed! Thank you for following my journey.</span>
+              <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span>Subscribed! Thank you for following along.</span>
               </div>
             ) : (
               <form onSubmit={handleSubscribe} className="flex gap-2">
@@ -139,46 +127,32 @@ export function Footer() {
                   value={newsletterEmail}
                   onChange={(e) => setNewsletterEmail(e.target.value)}
                   placeholder="your@email.com"
+                  className="w-full rounded-xl border border-border/80 bg-card px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                   required
-                  className="flex-1 rounded-lg border border-border bg-card/50 px-3 py-2 text-sm backdrop-blur-lg transition-all focus:border-neon-blue focus:shadow-[0_0_15px_rgba(0,212,255,0.2)] focus:outline-none"
                 />
-                <motion.button
+                <button
                   type="submit"
-                  className="rounded-lg bg-gradient-to-r from-neon-blue to-neon-cyan px-4 py-2 text-sm font-medium text-background transition-all hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] cursor-pointer"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-90 active:scale-95 shrink-0 cursor-pointer"
                 >
-                  Subscribe
-                </motion.button>
+                  Join
+                </button>
               </form>
             )}
-          </motion.div>
+          </div>
+
         </div>
 
         {/* Bottom Bar */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-sm text-muted-foreground md:flex-row"
-        >
-          <div className="flex items-center gap-1.5">
-            <span>© 2026 Eyoab Nigusie. Built with modern web engineering</span>
-            <Heart className="h-4 w-4 fill-neon-pink text-neon-pink inline" />
-          </div>
+        <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border/60 pt-8 text-xs text-muted-foreground">
+          <p>© {new Date().getFullYear()} Eyoab Nigusie. Designed with craft & intent.</p>
           <div className="flex items-center gap-6">
-            <a href="https://github.com/eyoabn" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-neon-cyan">
-              GitHub
-            </a>
-            <a href="mailto:eyoabnigusie@gmail.com" className="transition-colors hover:text-neon-cyan">
-              Email
-            </a>
-            <a href="#contact" className="transition-colors hover:text-neon-cyan">
-              Get in Touch
+            <span>Adama, Ethiopia</span>
+            <span>•</span>
+            <a href="#main" className="hover:text-foreground transition-colors">
+              Back to top ↑
             </a>
           </div>
-        </motion.div>
+        </div>
       </div>
     </footer>
   );

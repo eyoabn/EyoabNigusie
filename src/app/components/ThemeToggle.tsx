@@ -16,25 +16,24 @@ export function ThemeToggle() {
   return (
     <button
       onClick={cycleTheme}
-      className="group fixed right-4 top-3.5 z-[60] flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card/70 backdrop-blur-lg transition-all hover:scale-110 hover:border-neon-cyan hover:shadow-[0_0_20px_rgba(6,182,212,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background md:right-6 md:top-3.5 md:h-11 md:w-11 cursor-pointer"
+      className="group fixed right-4 top-3.5 z-[60] flex h-9 w-9 items-center justify-center rounded-xl border border-border/80 bg-card/90 shadow-2xs backdrop-blur-md transition-all hover:border-foreground/30 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background md:right-6 md:top-3 md:h-10 md:w-10 cursor-pointer"
       aria-label={`${LABELS[theme]}. Click to switch.`}
       title={LABELS[theme]}
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
           key={theme}
-          initial={{ rotate: -90, opacity: 0, scale: 0.6 }}
+          initial={{ rotate: -90, opacity: 0, scale: 0.7 }}
           animate={{ rotate: 0, opacity: 1, scale: 1 }}
-          exit={{ rotate: 90, opacity: 0, scale: 0.6 }}
+          exit={{ rotate: 90, opacity: 0, scale: 0.7 }}
           transition={{ duration: 0.2 }}
           className="flex items-center justify-center"
         >
-          <Icon className="h-5 w-5 text-neon-cyan" />
+          <Icon className="h-4 w-4 text-foreground" />
         </motion.span>
       </AnimatePresence>
 
-      {/* Label appears on hover so the current mode is discoverable without clicking through all three. */}
-      <span className="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-lg border border-border bg-card/90 px-3 py-1.5 text-xs text-muted-foreground opacity-0 backdrop-blur-lg transition-opacity group-hover:opacity-100">
+      <span className="pointer-events-none absolute right-full mr-2.5 whitespace-nowrap rounded-lg border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground opacity-0 shadow-xs backdrop-blur-md transition-opacity group-hover:opacity-100">
         {LABELS[theme]}
       </span>
     </button>

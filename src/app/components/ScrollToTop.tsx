@@ -21,13 +21,13 @@ export function ScrollToTop() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
       onClick={scrollToTop}
-      className="fixed bottom-8 right-8 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card/80 backdrop-blur-lg transition-all hover:border-neon-cyan hover:shadow-[0_0_30px_rgba(6,182,212,0.4)]"
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
+      className="fixed bottom-8 right-8 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border/80 bg-card text-foreground shadow-sm transition-all hover:border-foreground/30 hover:shadow-md cursor-pointer"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
       style={{ pointerEvents: isVisible ? "auto" : "none" }}
       aria-label="Scroll to top"
     >
-      <ArrowUp className="h-5 w-5 text-neon-cyan" />
+      <ArrowUp className="h-4 w-4" />
     </motion.button>
   );
 }

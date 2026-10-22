@@ -1,438 +1,179 @@
 import { motion } from "motion/react";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
+import { Code2, Smartphone, Server, Brain, Wrench } from "lucide-react";
 
-interface Skill {
+interface SkillItem {
   name: string;
-  level: number;
-  category: string;
-  x: number;
-  y: number;
-  color: string;
-  related: string[];
+  level: string;
+  focus: string;
 }
 
-const skillsData: Skill[] = [
-  // AI/ML Cluster (top-left quadrant)
-  { name: "Python", level: 95, category: "AI/ML", x: 15, y: 20, color: "neon-cyan", related: ["TensorFlow", "PyTorch", "scikit-learn"] },
-  { name: "TensorFlow", level: 88, category: "AI/ML", x: 25, y: 15, color: "neon-cyan", related: ["Python", "PyTorch", "Keras"] },
-  { name: "PyTorch", level: 85, category: "AI/ML", x: 20, y: 30, color: "neon-cyan", related: ["Python", "TensorFlow", "Computer Vision"] },
-  { name: "NLP", level: 82, category: "AI/ML", x: 10, y: 35, color: "neon-cyan", related: ["Python", "TensorFlow"] },
-  { name: "Computer Vision", level: 80, category: "AI/ML", x: 30, y: 25, color: "neon-cyan", related: ["PyTorch", "Python"] },
+interface SkillCategory {
+  title: string;
+  icon: typeof Code2;
+  description: string;
+  skills: SkillItem[];
+}
 
-  // Frontend Cluster (top-right quadrant)
-  { name: "React", level: 92, category: "Frontend", x: 75, y: 20, color: "neon-blue", related: ["TypeScript", "Next.js", "Tailwind"] },
-  { name: "TypeScript", level: 90, category: "Frontend", x: 85, y: 15, color: "neon-blue", related: ["React", "Node.js", "Next.js"] },
-  { name: "Next.js", level: 88, category: "Frontend", x: 80, y: 30, color: "neon-blue", related: ["React", "TypeScript", "Node.js"] },
-  { name: "Tailwind", level: 93, category: "Frontend", x: 70, y: 35, color: "neon-blue", related: ["React", "CSS", "UI/UX"] },
-  { name: "Vue.js", level: 78, category: "Frontend", x: 90, y: 25, color: "neon-blue", related: ["TypeScript", "React"] },
-
-  // Mobile Cluster (bottom-left quadrant)
-  { name: "Flutter", level: 90, category: "Mobile", x: 15, y: 70, color: "neon-purple", related: ["Dart", "Firebase", "iOS"] },
-  { name: "Dart", level: 89, category: "Mobile", x: 25, y: 75, color: "neon-purple", related: ["Flutter", "Firebase"] },
-  { name: "React Native", level: 82, category: "Mobile", x: 20, y: 85, color: "neon-purple", related: ["React", "TypeScript", "iOS"] },
-  { name: "iOS", level: 75, category: "Mobile", x: 10, y: 80, color: "neon-purple", related: ["Swift", "Flutter", "React Native"] },
-  { name: "Android", level: 76, category: "Mobile", x: 30, y: 80, color: "neon-purple", related: ["Flutter", "Kotlin"] },
-
-  // Backend/Cloud Cluster (bottom-right quadrant)
-  { name: "Node.js", level: 87, category: "Backend", x: 75, y: 70, color: "neon-pink", related: ["TypeScript", "PostgreSQL", "AWS"] },
-  { name: "PostgreSQL", level: 85, category: "Backend", x: 85, y: 75, color: "neon-pink", related: ["Node.js", "GraphQL"] },
-  { name: "AWS", level: 83, category: "Backend", x: 80, y: 85, color: "neon-pink", related: ["Docker", "Node.js", "Kubernetes"] },
-  { name: "Docker", level: 88, category: "Backend", x: 70, y: 80, color: "neon-pink", related: ["Kubernetes", "AWS", "CI/CD"] },
-  { name: "GraphQL", level: 84, category: "Backend", x: 90, y: 78, color: "neon-pink", related: ["Node.js", "PostgreSQL", "TypeScript"] },
-
-  // Center connections
-  { name: "Git", level: 95, category: "Tools", x: 50, y: 50, color: "neon-cyan", related: ["GitHub", "CI/CD"] },
-  { name: "UI/UX", level: 85, category: "Design", x: 45, y: 40, color: "neon-blue", related: ["Figma", "Tailwind"] },
-  { name: "Figma", level: 88, category: "Design", x: 55, y: 40, color: "neon-blue", related: ["UI/UX", "Design Systems"] },
-  { name: "Firebase", level: 82, category: "Backend", x: 45, y: 60, color: "neon-pink", related: ["Flutter", "Node.js"] },
-  { name: "MongoDB", level: 81, category: "Backend", x: 55, y: 60, color: "neon-pink", related: ["Node.js", "Express"] },
+const skillCategories: SkillCategory[] = [
+  {
+    title: "Frontend & Web",
+    icon: Code2,
+    description: "Responsive, accessible, and fast web applications",
+    skills: [
+      { name: "React", level: "Advanced", focus: "Component architecture, custom hooks" },
+      { name: "TypeScript", level: "Advanced", focus: "Strict type safety, interfaces, generics" },
+      { name: "Next.js", level: "Proficient", focus: "App Router, SSR, SEO, performance" },
+      { name: "Tailwind CSS", level: "Advanced", focus: "Design systems, responsive utilities" },
+      { name: "HTML5 / CSS3", level: "Expert", focus: "Semantic markup, modern layout, grid/flex" },
+      { name: "Vue.js", level: "Working", focus: "Component reactivity, state stores" },
+    ],
+  },
+  {
+    title: "Mobile Engineering",
+    icon: Smartphone,
+    description: "Cross-platform mobile apps for iOS and Android",
+    skills: [
+      { name: "Flutter", level: "Advanced", focus: "Clean Architecture, native performance" },
+      { name: "Dart", level: "Advanced", focus: "Object-oriented, asynchronous streams" },
+      { name: "BLoC & Provider", level: "Advanced", focus: "Predictable enterprise state management" },
+      { name: "Firebase Mobile", level: "Proficient", focus: "Auth, Firestore, Cloud Functions, Messaging" },
+      { name: "Material 3 & Cupertino", level: "Proficient", focus: "Platform-adaptive design patterns" },
+      { name: "Offline Sync", level: "Proficient", focus: "Hive, SQLite, cached network data" },
+    ],
+  },
+  {
+    title: "Backend & Databases",
+    icon: Server,
+    description: "Scalable APIs, secure auth, and data modeling",
+    skills: [
+      { name: "Node.js", level: "Advanced", focus: "Event-driven runtime, modular services" },
+      { name: "Express.js", level: "Advanced", focus: "REST APIs, middleware, security headers" },
+      { name: "PostgreSQL", level: "Proficient", focus: "Relational modeling, indexing, queries" },
+      { name: "MongoDB", level: "Proficient", focus: "Document schemas, aggregation pipelines" },
+      { name: "RESTful Architecture", level: "Advanced", focus: "Status codes, pagination, error handling" },
+      { name: "JWT & Session Auth", level: "Proficient", focus: "Role-based access control, security" },
+    ],
+  },
+  {
+    title: "AI & Applied ML",
+    icon: Brain,
+    description: "Machine learning integration & data pipelines",
+    skills: [
+      { name: "Python", level: "Advanced", focus: "Scripting, algorithmic analysis, NumPy" },
+      { name: "TensorFlow & Keras", level: "Proficient", focus: "Model training, architecture visualizer" },
+      { name: "PyTorch", level: "Working", focus: "Deep learning fundamentals, tensors" },
+      { name: "FastAPI", level: "Proficient", focus: "High-speed Python microservices & docs" },
+      { name: "Data Visualization", level: "Proficient", focus: "D3.js, charts, real-time metrics" },
+    ],
+  },
+  {
+    title: "Tools & DevOps",
+    icon: Wrench,
+    description: "Workflow tooling, version control, and hosting",
+    skills: [
+      { name: "Git & GitHub", level: "Advanced", focus: "Branching strategies, PR reviews, CI/CD" },
+      { name: "Docker", level: "Working", focus: "Containerization, compose files, environments" },
+      { name: "Postman", level: "Proficient", focus: "API testing, automated request suites" },
+      { name: "Vercel & Render", level: "Advanced", focus: "Continuous deployment, preview branches" },
+      { name: "Linux / CLI", level: "Proficient", focus: "Shell scripting, server maintenance" },
+    ],
+  },
 ];
 
 export function Skills() {
-  const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("All");
 
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        setMousePosition({
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top,
-        });
-      }
-    };
-
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener("mousemove", handleMouseMove);
-      return () => container.removeEventListener("mousemove", handleMouseMove);
-    }
-  }, []);
-
-  const getColorClass = (color: string) => {
-    const colors: Record<string, string> = {
-      "neon-cyan": "#06b6d4",
-      "neon-blue": "#00d4ff",
-      "neon-purple": "#a855f7",
-      "neon-pink": "#ec4899",
-    };
-    return colors[color] || colors["neon-blue"];
-  };
-
-  const isRelated = (skill: Skill, hoveredSkillName: string | null) => {
-    if (!hoveredSkillName) return false;
-    return skill.name === hoveredSkillName || skill.related.includes(hoveredSkillName);
-  };
-
-  const [activeCategory, setActiveCategory] = useState<string>("All");
-
-  const statGradients: Record<string, string> = {
-    "neon-cyan": "linear-gradient(135deg, #06b6d4, #00d4ff)",
-    "neon-blue": "linear-gradient(135deg, #00d4ff, #a855f7)",
-    "neon-purple": "linear-gradient(135deg, #a855f7, #ec4899)",
-    "neon-pink": "linear-gradient(135deg, #ec4899, #f43f5e)",
-  };
-
-  const categories = ["All", "Frontend", "Mobile", "Backend", "AI/ML", "Design", "Tools"];
-
-  const filteredSkills = activeCategory === "All"
-    ? skillsData
-    : skillsData.filter((s) => s.category === activeCategory);
+  const filteredCategories =
+    activeTab === "All"
+      ? skillCategories
+      : skillCategories.filter((cat) => cat.title.toLowerCase().includes(activeTab.toLowerCase()));
 
   return (
-    <section id="skills" className="relative px-4 py-32">
-      {/* Background Effects */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-1/4 top-1/4 h-[500px] w-[500px] rounded-full bg-neon-purple/5 blur-[120px] animate-pulse" />
-        <div className="absolute right-1/4 bottom-1/4 h-[500px] w-[500px] rounded-full bg-neon-cyan/5 blur-[120px] animate-pulse" style={{ animationDelay: "1s" }} />
-      </div>
-
+    <section id="skills" className="relative px-6 py-28 lg:px-12">
       <div className="mx-auto max-w-7xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
-        >
-          <h2 className="mb-4 bg-gradient-to-r from-neon-cyan via-neon-blue to-neon-purple bg-clip-text text-4xl tracking-tight text-transparent md:text-5xl">
-            Skills Universe
+        
+        {/* Section Header */}
+        <div className="mb-14 text-center">
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Technical Stack
+          </div>
+          <h2 className="mb-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            Skills & Expertise
           </h2>
-          <p className="mb-4 text-sm text-muted-foreground">
-            Interactive neural network of expertise • Hover a skill node to trace its connections
+          <p className="mx-auto max-w-2xl text-base text-muted-foreground">
+            A comprehensive breakdown of languages, frameworks, and engineering tools I use to deliver production software.
           </p>
-          <div className="mx-auto h-1 w-20 rounded-full bg-gradient-to-r from-neon-cyan to-neon-purple" />
-        </motion.div>
 
-        {/* Mobile View (< md) */}
-        <div className="block md:hidden space-y-6">
-          {/* Category Filter Pills */}
-          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-            {categories.map((cat) => (
+          {/* Filter Pills */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+            {["All", "Frontend", "Mobile", "Backend", "AI", "Tools"].map((tab) => (
               <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`whitespace-nowrap rounded-xl px-4 py-2 text-xs font-medium transition-all ${
-                  activeCategory === cat
-                    ? "bg-gradient-to-r from-neon-blue to-neon-purple text-background shadow-lg shadow-neon-blue/20"
-                    : "border border-border bg-card/60 text-muted-foreground hover:text-foreground"
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`rounded-xl px-4 py-2 text-xs font-medium transition-all cursor-pointer ${
+                  activeTab === tab
+                    ? "bg-foreground text-background font-semibold shadow-xs"
+                    : "border border-border/80 bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
-                {cat}
+                {tab === "All" ? "Full Stack" : tab}
               </button>
-            ))}
-          </div>
-
-          {/* Mobile Skills Grid */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {filteredSkills.map((skill) => (
-              <div
-                key={skill.name}
-                className="rounded-2xl border border-border/60 bg-card/50 p-4 backdrop-blur-lg"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div
-                    className="h-2.5 w-2.5 rounded-full"
-                    style={{
-                      backgroundColor: getColorClass(skill.color),
-                      boxShadow: `0 0 10px ${getColorClass(skill.color)}`,
-                    }}
-                  />
-                  <span className="text-[10px] text-muted-foreground font-mono">{skill.category}</span>
-                </div>
-                <h4 className="text-sm font-semibold">{skill.name}</h4>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {skill.related.slice(0, 2).map((rel) => (
-                    <span key={rel} className="rounded bg-muted/40 px-1.5 py-0.5 text-[9px] text-muted-foreground">
-                      {rel}
-                    </span>
-                  ))}
-                </div>
-              </div>
             ))}
           </div>
         </div>
 
-        {/* Desktop Neural Network Visualization (>= md) */}
-        <motion.div
-          ref={containerRef}
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="relative mx-auto hidden md:block aspect-[16/10] max-w-6xl overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card/50 to-card/20 backdrop-blur-xl"
-        >
-          {/* Connection Lines */}
-          <svg className="absolute inset-0 h-full w-full">
-            <defs>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            {skillsData.map((skill) =>
-              skill.related.map((relatedName) => {
-                const relatedSkill = skillsData.find((s) => s.name === relatedName);
-                if (!relatedSkill) return null;
-
-                const isActive = hoveredSkill === skill.name || hoveredSkill === relatedName;
-                const opacity = hoveredSkill === null ? 0.1 : isActive ? 0.6 : 0.02;
-
-                return (
-                  <motion.line
-                    key={`${skill.name}-${relatedName}`}
-                    x1={`${skill.x}%`}
-                    y1={`${skill.y}%`}
-                    x2={`${relatedSkill.x}%`}
-                    y2={`${relatedSkill.y}%`}
-                    stroke={isActive ? getColorClass(skill.color) : "#ffffff"}
-                    strokeWidth={isActive ? "2" : "1"}
-                    initial={{ opacity: 0.1 }}
-                    animate={{ opacity }}
-                    transition={{ duration: 0.3 }}
-                    filter={!isMobile && isActive ? "url(#glow)" : undefined}
-                  />
-                );
-              })
-            )}
-
-            {/* Animated particles along connections when hovered */}
-            {!isMobile && hoveredSkill &&
-              skillsData
-                .find((s) => s.name === hoveredSkill)
-                ?.related.map((relatedName) => {
-                  const skill = skillsData.find((s) => s.name === hoveredSkill);
-                  const relatedSkill = skillsData.find((s) => s.name === relatedName);
-                  if (!skill || !relatedSkill) return null;
-
-                  return (
-                    <motion.circle
-                      key={`particle-${skill.name}-${relatedName}`}
-                      r="3"
-                      fill={getColorClass(skill.color)}
-                      filter="url(#glow)"
-                      initial={{ cx: `${skill.x}%`, cy: `${skill.y}%` }}
-                      animate={{
-                        cx: [`${skill.x}%`, `${relatedSkill.x}%`],
-                        cy: [`${skill.y}%`, `${relatedSkill.y}%`],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                    />
-                  );
-                })}
-          </svg>
-
-          {/* Skill Nodes */}
-          {skillsData.map((skill, index) => {
-            const isHovered = hoveredSkill === skill.name;
-            const isConnected = hoveredSkill !== null && isRelated(skill, hoveredSkill);
-            const shouldHighlight = hoveredSkill === null || isHovered || isConnected;
-            const nodeSize = isHovered ? 24 : 16;
-            const labelOpacity = hoveredSkill === null ? 0.7 : shouldHighlight ? 1 : 0.2;
-
-            return (
-              <motion.div
-                key={skill.name}
-                className="absolute"
-                style={{
-                  left: `${skill.x}%`,
-                  top: `${skill.y}%`,
-                  transform: "translate(-50%, -50%)",
-                }}
-                initial={{ opacity: 0, scale: 0 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.02 }}
-                onHoverStart={() => setHoveredSkill(skill.name)}
-                onHoverEnd={() => setHoveredSkill(null)}
-                onTouchStart={() => setHoveredSkill(skill.name)}
-                onTouchEnd={() => setHoveredSkill(null)}
-                data-cursor={skill.name}
-              >
-                {/* Outer Glow Ring */}
-                <motion.div
-                  className="absolute inset-0 rounded-full"
-                  style={{
-                    width: nodeSize * 3,
-                    height: nodeSize * 3,
-                    left: "50%",
-                    top: "50%",
-                    x: "-50%",
-                    y: "-50%",
-                    background: `radial-gradient(circle, ${getColorClass(skill.color)}20 0%, transparent 70%)`,
-                  }}
-                  animate={{
-                    scale: isHovered ? [1, 1.3, 1] : 1,
-                    opacity: isHovered ? 0.8 : shouldHighlight ? 0.4 : 0.1,
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-
-                {/* Node Circle */}
-                <motion.div
-                  className="relative rounded-full border-2 backdrop-blur-sm"
-                  style={{
-                    width: nodeSize,
-                    height: nodeSize,
-                    borderColor: getColorClass(skill.color),
-                    backgroundColor: `${getColorClass(skill.color)}40`,
-                    boxShadow: shouldHighlight
-                      ? `0 0 20px ${getColorClass(skill.color)}80`
-                      : "none",
-                  }}
-                  animate={{
-                    scale: isHovered ? 1.5 : 1,
-                    borderWidth: isHovered ? 3 : 2,
-                  }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {/* Pulsing Inner Core */}
-                  <motion.div
-                    className="absolute inset-0 m-auto h-2 w-2 rounded-full"
-                    style={{ backgroundColor: getColorClass(skill.color) }}
-                    animate={{
-                      scale: [1, 1.5, 1],
-                      opacity: [0.6, 1, 0.6],
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                </motion.div>
-
-                {/* Skill Label */}
-                <motion.div
-                  className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg border border-border bg-card/90 px-3 py-1.5 backdrop-blur-lg"
-                  animate={{
-                    opacity: labelOpacity,
-                    y: isHovered ? 0 : 4,
-                    scale: isHovered ? 1.1 : 1,
-                  }}
-                  transition={{ duration: 0.2 }}
-                  style={{
-                    boxShadow: isHovered
-                      ? `0 0 20px ${getColorClass(skill.color)}40`
-                      : "none",
-                  }}
-                >
-                  <div className="text-xs">{skill.name}</div>
-                  {isHovered && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="mt-1 border-t border-border pt-1 text-[10px] text-muted-foreground"
-                    >
-                      {skill.category}
-                    </motion.div>
-                  )}
-                </motion.div>
-              </motion.div>
-            );
-          })}
-
-          {/* Interactive Spotlight Effect */}
-          <motion.div
-            className="pointer-events-none absolute h-64 w-64 rounded-full"
-            style={{
-              background: "radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%)",
-              left: mousePosition.x - 128,
-              top: mousePosition.y - 128,
-            }}
-          />
-
-          {/* Category Legend */}
-          <div className="absolute bottom-4 left-4 flex flex-wrap gap-3">
-            {["AI/ML", "Frontend", "Mobile", "Backend", "Design", "Tools"].map((category) => {
-              const categorySkills = skillsData.filter((s) => s.category === category);
-              if (categorySkills.length === 0) return null;
-              const color = getColorClass(categorySkills[0].color);
-
-              return (
-                <div key={category} className="flex items-center gap-2 rounded-lg border border-border bg-card/80 px-3 py-1.5 backdrop-blur-lg">
-                  <div
-                    className="h-2 w-2 rounded-full"
-                    style={{
-                      backgroundColor: color,
-                      boxShadow: `0 0 8px ${color}`,
-                    }}
-                  />
-                  <span className="text-xs text-muted-foreground">{category}</span>
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-12 grid gap-6 grid-cols-2 md:grid-cols-4"
-        >
-          {[
-            { label: "Technologies", value: skillsData.length, color: "neon-cyan" },
-            { label: "Categories", value: "6+", color: "neon-blue" },
-            { label: "GitHub Commits", value: "1K+", color: "neon-purple" },
-            { label: "Projects Built", value: "15+", color: "neon-pink" },
-          ].map((stat) => (
+        {/* Categories Grid */}
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {filteredCategories.map((cat, idx) => (
             <motion.div
-              key={stat.label}
-              whileHover={{ y: -5, scale: 1.02 }}
-              className="group relative overflow-hidden rounded-2xl border border-border bg-card/50 p-6 text-center backdrop-blur-lg transition-all hover:border-neon-cyan/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)]"
-              data-cursor={stat.label}
+              key={cat.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: idx * 0.05 }}
+              className="flex flex-col rounded-3xl border border-border/80 bg-card p-7 shadow-xs transition-all hover:border-foreground/20 hover:shadow-md"
             >
-              <div
-                className="mb-2 bg-clip-text text-4xl font-extrabold text-transparent"
-                style={{
-                  backgroundImage: statGradients[stat.color] || statGradients["neon-cyan"],
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                {stat.value}
+              {/* Category Header */}
+              <div className="mb-6 flex items-start gap-4">
+                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <cat.icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold tracking-tight text-foreground">
+                    {cat.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {cat.description}
+                  </p>
+                </div>
               </div>
-              <div className="text-sm text-muted-foreground">{stat.label}</div>
-              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-neon-cyan/10 blur-2xl transition-all group-hover:bg-neon-cyan/20" />
+
+              {/* Skills List */}
+              <div className="space-y-3 flex-1">
+                {cat.skills.map((skill) => (
+                  <div
+                    key={skill.name}
+                    className="rounded-xl border border-border/50 bg-muted/40 p-3 transition-colors hover:bg-muted/70"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-semibold text-foreground">
+                        {skill.name}
+                      </span>
+                      <span className="rounded-md border border-border/60 bg-card px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                        {skill.level}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground leading-snug">
+                      {skill.focus}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
+
       </div>
     </section>
   );

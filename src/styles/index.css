@@ -23,38 +23,26 @@ html {
   outline: none;
 }
 
-/* Custom Scrollbar */
+/* Clean Modern Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--neon-blue), var(--neon-purple));
-  border-radius: 10px;
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, var(--neon-cyan), var(--neon-pink));
-}
-
-/* Custom cursor styles - only apply on portfolio page when custom cursor is active and motion is allowed */
-@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
-  body.portfolio-page.cursor-ready {
-    cursor: none;
-  }
-
-  body.portfolio-page.cursor-ready a,
-  body.portfolio-page.cursor-ready button {
-    cursor: none;
-  }
+  background: rgba(148, 163, 184, 0.45);
 }
 
 /* Selection */
 ::selection {
-  background: var(--neon-blue);
-  color: var(--background);
+  background: rgba(37, 99, 235, 0.2);
+  color: inherit;
 }

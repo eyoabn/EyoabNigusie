@@ -13,38 +13,30 @@ export function NotFound() {
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 text-foreground">
       <UniverseBackground />
 
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neon-purple/10 blur-[140px]" />
-      </div>
-
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative z-10 max-w-lg text-center"
+        transition={{ duration: 0.5 }}
+        className="relative z-10 max-w-md text-center"
       >
-        <motion.div
-          animate={{ rotate: [0, 12, -12, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl border border-border bg-card/50 backdrop-blur-lg"
-        >
-          <Compass className="h-9 w-9 text-neon-cyan" />
-        </motion.div>
+        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-card shadow-xs">
+          <Compass className="h-8 w-8 text-primary" />
+        </div>
 
-        <h1 className="mb-4 bg-gradient-to-r from-neon-blue via-neon-cyan to-neon-purple bg-clip-text text-7xl font-bold tracking-tight text-transparent">
+        <h1 className="mb-2 text-6xl font-extrabold tracking-tight text-foreground">
           404
         </h1>
-        <h2 className="mb-3 text-2xl font-medium">Lost in space</h2>
-        <p className="mb-10 text-muted-foreground">
-          This page drifted out of orbit. Let's get you back to somewhere familiar.
+        <h2 className="mb-2 text-xl font-bold text-foreground">Page not found</h2>
+        <p className="mb-8 text-sm text-muted-foreground leading-relaxed">
+          The page you are looking for doesn't exist or has been moved.
         </p>
 
         <Link
           to="/"
-          className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-neon-blue to-neon-cyan px-7 py-3 text-sm font-medium text-background transition-all hover:shadow-[0_0_30px_rgba(0,212,255,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-xs transition-opacity hover:opacity-90 active:scale-95"
         >
-          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-          Back to portfolio
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back to portfolio</span>
         </Link>
       </motion.div>
     </div>

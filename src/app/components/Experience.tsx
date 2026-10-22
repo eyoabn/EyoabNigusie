@@ -1,147 +1,135 @@
 import { motion } from "motion/react";
-import { Briefcase, GraduationCap } from "lucide-react";
+import { Briefcase, GraduationCap, CheckCircle2 } from "lucide-react";
 
 const experiences = [
   {
     type: "work",
     title: "Full-Stack Software Engineer",
-    company: "Freelance & Independent Projects",
-    period: "2024 - Present",
+    company: "Freelance & Independent Client Projects",
+    period: "2024 — Present",
     description:
-      "Architecting and deploying production-ready full-stack applications, AI tools, and cross-platform mobile apps.",
+      "Architecting and shipping responsive full-stack applications, interactive web platforms, and mobile apps for clients and independent initiatives.",
     achievements: [
-      "Built and deployed an interactive deep learning platform using FastAPI, React, and TensorFlow",
-      "Engineered an educational mobile platform (EduConnect) using Flutter, Dart, and Node.js",
-      "Developed a real-time job matching system with WebSockets and JWT authentication",
+      "Engineered EduConnect — an interactive mobile learning platform using Flutter, Dart, and Firebase",
+      "Developed e-commerce & portfolio platform for Arenguade Eco Paper with Next.js and Tailwind CSS",
+      "Built real-time deep learning visualization tools with React, FastAPI, and TensorFlow",
     ],
   },
   {
     type: "work",
     title: "Mobile App Developer",
-    company: "Personal Projects",
-    period: "2023 - 2024",
+    company: "Independent Mobile Development",
+    period: "2023 — 2024",
     description:
-      "Focused on cross-platform mobile development, mastering Flutter and Firebase to build intuitive apps.",
+      "Focused on cross-platform mobile engineering, mastering Flutter state management and backend integration.",
     achievements: [
-      "Mastered Material 3 design principles for seamless UI/UX",
-      "Integrated secure authentication and cloud databases",
-      "Transitioned from mobile-only to full-stack web and AI development",
+      "Implemented clean architectural patterns with BLoC and Riverpod for scalable mobile codebases",
+      "Designed platform-adaptive interfaces compliant with Material 3 and iOS human guidelines",
+      "Integrated Firebase Authentication, Cloud Firestore, and offline local cache persistence",
     ],
   },
   {
     type: "education",
     title: "B.Sc. in Software Engineering",
-    company: "Adama Science and Technology University",
-    period: "Class of 2028",
-    description: "Currently in my third year, focusing on advanced software architecture, algorithms, and full-stack development.",
+    company: "Adama Science and Technology University (ASTU)",
+    period: "Class of 2028 (Third Year)",
+    description:
+      "Pursuing a rigorous degree in Software Engineering, studying algorithms, data structures, system architecture, and software design principles.",
     achievements: [
-      "Consistent academic excellence while building production-grade software independently",
-      "Completed advanced coursework in AI & Machine Learning via self-directed learning",
-      "Actively applying theoretical knowledge to real-world, open-source projects",
+      "Maintaining strong academic standing while shipping production-grade open source projects",
+      "Applied theoretical computer science directly to real-world full-stack web and mobile systems",
+      "Active participant in developer circles and collaborative technical peer groups",
     ],
   },
 ];
 
 export function Experience() {
   return (
-    <section id="experience" className="relative px-4 py-32">
-      <div className="mx-auto max-w-5xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
-        >
-          <h2 className="mb-4 bg-gradient-to-r from-neon-pink to-neon-blue bg-clip-text text-4xl tracking-tight text-transparent md:text-5xl">
+    <section id="experience" className="relative px-6 py-28 lg:px-12">
+      <div className="mx-auto max-w-4xl">
+        
+        {/* Section Header */}
+        <div className="mb-16 text-center">
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Career Journey
+          </div>
+          <h2 className="mb-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Experience & Education
           </h2>
-          <div className="mx-auto h-1 w-20 rounded-full bg-gradient-to-r from-neon-pink to-neon-blue" />
-        </motion.div>
+          <p className="mx-auto max-w-xl text-base text-muted-foreground">
+            A chronological timeline of my academic background and hands-on software engineering work.
+          </p>
+        </div>
 
         {/* Timeline */}
         <div className="relative">
-          {/* Timeline Line */}
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-neon-blue via-neon-purple to-neon-cyan md:left-1/2" />
+          {/* Vertical Track */}
+          <div className="absolute left-4 top-4 bottom-4 w-px bg-border md:left-1/2 md:-translate-x-1/2" />
 
           {/* Timeline Items */}
           <div className="space-y-12">
             {experiences.map((exp, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className={`relative flex items-center gap-8 ${
+                transition={{ duration: 0.45, delay: index * 0.1 }}
+                className={`relative flex flex-col md:flex-row gap-6 md:gap-12 items-start ${
                   index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
                 }`}
               >
-                {/* Timeline Dot */}
-                <div className="absolute left-8 flex h-4 w-4 items-center justify-center md:left-1/2 md:-translate-x-1/2">
-                  <div
-                    className={`h-4 w-4 rounded-full border-2 ${
-                      exp.type === "work"
-                        ? "border-neon-blue bg-neon-blue/20"
-                        : "border-neon-purple bg-neon-purple/20"
-                    } shadow-[0_0_15px_rgba(0,212,255,0.5)]`}
-                  />
+                {/* Timeline Dot Marker */}
+                <div className="absolute left-4 -translate-x-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card shadow-xs md:left-1/2">
+                  {exp.type === "work" ? (
+                    <Briefcase className="h-3.5 w-3.5 text-primary" />
+                  ) : (
+                    <GraduationCap className="h-3.5 w-3.5 text-primary" />
+                  )}
                 </div>
 
-                {/* Content */}
-                <div className="ml-20 w-full md:ml-0 md:w-[calc(50%-3rem)]">
-                  <motion.div
-                    whileHover={{ y: -5 }}
-                    className="group relative overflow-hidden rounded-2xl border border-border bg-card/50 p-6 backdrop-blur-lg transition-all hover:border-neon-purple/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]"
-                  >
-                    {/* Glow Effect */}
-                    <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-neon-purple/10 blur-2xl transition-all group-hover:bg-neon-purple/20" />
-
-                    <div className="relative">
-                      {/* Icon */}
-                      <div
-                        className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg ${
-                          exp.type === "work"
-                            ? "bg-neon-blue/20 text-neon-blue"
-                            : "bg-neon-purple/20 text-neon-purple"
-                        }`}
-                      >
-                        {exp.type === "work" ? (
-                          <Briefcase className="h-5 w-5" />
-                        ) : (
-                          <GraduationCap className="h-5 w-5" />
-                        )}
-                      </div>
-
-                      {/* Period */}
-                      <div className="mb-2 text-sm text-neon-cyan">{exp.period}</div>
-
-                      {/* Title & Company */}
-                      <h3 className="mb-1">{exp.title}</h3>
-                      <div className="mb-3 text-sm text-muted-foreground">{exp.company}</div>
-
-                      {/* Description */}
-                      <p className="mb-4 text-sm text-muted-foreground">{exp.description}</p>
-
-                      {/* Achievements */}
-                      <div className="space-y-2">
-                        {exp.achievements.map((achievement, i) => (
-                          <div key={i} className="flex items-start gap-2">
-                            <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-neon-blue" />
-                            <span className="text-sm text-muted-foreground">{achievement}</span>
-                          </div>
-                        ))}
-                      </div>
+                {/* Card Container */}
+                <div className="ml-10 w-[calc(100%-2.5rem)] md:ml-0 md:w-[calc(50%-2rem)]">
+                  <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-xs transition-colors hover:border-foreground/20">
+                    {/* Period Badge */}
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="rounded-full border border-border/60 bg-muted/60 px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                        {exp.period}
+                      </span>
+                      <span className="text-xs font-semibold text-primary uppercase tracking-wider">
+                        {exp.type === "work" ? "Experience" : "Education"}
+                      </span>
                     </div>
-                  </motion.div>
+
+                    <h3 className="text-lg font-bold tracking-tight text-foreground">
+                      {exp.title}
+                    </h3>
+                    <div className="text-sm font-medium text-muted-foreground mb-3">
+                      {exp.company}
+                    </div>
+
+                    <p className="text-sm leading-relaxed text-muted-foreground mb-4">
+                      {exp.description}
+                    </p>
+
+                    <div className="space-y-2 border-t border-border/50 pt-3">
+                      {exp.achievements.map((item, i) => (
+                        <div key={i} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
+                          <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-emerald-500 mt-0.5" />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Spacer for desktop */}
-                <div className="hidden w-[calc(50%-3rem)] md:block" />
+                {/* Desktop Spacer */}
+                <div className="hidden w-[calc(50%-2rem)] md:block" />
               </motion.div>
             ))}
           </div>
         </div>
+
       </div>
     </section>
   );

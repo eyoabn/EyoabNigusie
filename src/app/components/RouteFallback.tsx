@@ -6,7 +6,7 @@ export function RouteFallback() {
       role="status"
       aria-label="Loading page"
     >
-      <div className="h-10 w-10 animate-spin rounded-full border-2 border-border border-t-neon-cyan" />
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-primary" />
     </div>
   );
 }

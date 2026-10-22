@@ -267,23 +267,14 @@ export function Admin() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 font-sans relative">
-        {/* Animated background glow */}
-        <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-neon-blue/5 blur-[120px]" />
-          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-neon-purple/5 blur-[120px]" />
-        </div>
-
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md rounded-2xl border border-border bg-card/60 backdrop-blur-xl p-8 shadow-2xl relative overflow-hidden"
+          transition={{ duration: 0.4 }}
+          className="w-full max-w-md rounded-2xl border border-border/80 bg-card p-8 shadow-lg relative overflow-hidden"
         >
-          {/* Decorative Top Border Line */}
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-neon-blue to-neon-purple" />
-          
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-neon-cyan via-neon-blue to-neon-purple bg-clip-text text-transparent mb-2">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground mb-2">
               Admin Portal
             </h2>
             <p className="text-sm text-muted-foreground">
@@ -308,11 +299,9 @@ export function Admin() {
                 placeholder="••••••••"
                 required
                 autoComplete="current-password"
-                // Announces the failure to a screen reader instead of leaving it
-                // as a red box only a sighted user notices.
                 aria-invalid={Boolean(loginError)}
                 aria-describedby={loginError ? "admin-password-error" : undefined}
-                className="w-full rounded-xl border border-border bg-background/50 px-4 py-3 text-sm placeholder:text-muted-foreground/50 focus:border-neon-cyan/50 focus:outline-none focus:ring-1 focus:ring-neon-cyan/50 transition-all"
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
               />
             </div>
 
@@ -320,21 +309,19 @@ export function Admin() {
               <motion.div
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-400"
+                className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-500"
               >
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 <span>{loginError}</span>
               </motion.div>
             )}
 
-            <motion.button
+            <button
               type="submit"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-cyan py-3 text-sm font-semibold text-background hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all flex items-center justify-center gap-2"
+              className="w-full rounded-xl bg-primary py-3 text-sm font-semibold text-primary-foreground shadow-xs transition-opacity hover:opacity-90 active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
             >
               Access Dashboard
-            </motion.button>
+            </button>
           </form>
 
           <div className="mt-8 text-center">
@@ -353,14 +340,8 @@ export function Admin() {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
-      {/* Animated background glow */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-neon-blue/5 blur-[150px]" />
-        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] rounded-full bg-neon-purple/5 blur-[150px]" />
-      </div>
-
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link
@@ -372,8 +353,8 @@ export function Admin() {
             </Link>
             <div className="h-4 w-px bg-border" />
             <div className="flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-neon-cyan animate-pulse" />
-              <span className="text-sm font-medium bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent">
+              <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-sm font-semibold text-foreground">
                 Admin Dashboard
               </span>
             </div>

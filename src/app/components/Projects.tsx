@@ -1,17 +1,9 @@
-import { motion, useMotionValue, useTransform, AnimatePresence } from "motion/react";
-import { ExternalLink, Github, ArrowRight, Sparkles } from "lucide-react";
-import { useState, useRef, lazy, Suspense } from "react";
+import { motion } from "motion/react";
+import { Github, ArrowUpRight, Smartphone, Sparkles } from "lucide-react";
+import { useState, lazy, Suspense } from "react";
 
-// ~1,400 lines that only ever render inside a modal — no reason to make every
-// visitor download them up front.
 const EduConnectSimulator = lazy(() => import("./EduConnectSimulator"));
 
-/**
- * Unsplash serves any width of the same photo from its `w` query parameter, so a
- * single source URL can back a whole srcset. Without one, a card roughly 380px
- * wide still downloads the 1200px file — several hundred KB per project, paid for
- * by every visitor on a phone.
- */
 const IMAGE_WIDTHS = [480, 720, 1080, 1440];
 
 function buildSrcSet(url: string) {
@@ -19,53 +11,58 @@ function buildSrcSet(url: string) {
   return IMAGE_WIDTHS.map((w) => `${url.replace(/([?&])w=\d+/, `$1w=${w}`)} ${w}w`).join(", ");
 }
 
-// Cards are one column on phones, two on tablets, three on wide screens.
-const IMAGE_SIZES = "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw";
+const IMAGE_SIZES = "(min-width: 1024px) 50vw, 100vw";
 
-const featuredProjects = [
+interface Project {
+  id: number;
+  title: string;
+  tagline: string;
+  description: string;
+  image: string;
+  tags: string[];
+  category: "Web" | "Mobile App" | "AI";
+  featured?: boolean;
+  live?: string;
+  github?: string;
+  hasSimulator?: boolean;
+}
+
+const projectsList: Project[] = [
   {
     id: 1,
     title: "EduConnect",
-    tagline: "Bridging the gap between teachers and students",
+    tagline: "Bridging the gap between teachers, students, and classrooms",
     description:
-      "A comprehensive platform designed to seamlessly connect educators and learners. Features include streamlined communication, resource sharing, and interactive tools to enhance the digital learning experience.",
-    longDescription:
-      "EduConnect is a mobile application built to modernize education. It provides secure virtual classrooms, assignment tracking, real-time messaging, and progress monitoring, making learning more accessible and engaging for both teachers and students.",
+      "A cross-platform mobile educational platform engineered with Flutter and Firebase. Features virtual classrooms, assignment workflows, real-time messaging, and student progress tracking.",
     image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
-    tags: ["Flutter", "Dart", "Firebase", "EdTech"],
+    tags: ["Flutter", "Dart", "Firebase", "EdTech", "BLoC"],
     category: "Mobile App",
-    metrics: { users: "Active", status: "Completed", type: "Full-Stack" },
     featured: true,
     github: "https://github.com/eyoabn/Educonnect",
+    hasSimulator: true,
   },
   {
     id: 9,
     title: "Arenguade Eco Paper (Green Bag)",
-    tagline: "Sustainable Packaging & Craft Academy",
+    tagline: "Sustainable Packaging & Craft Academy Platform",
     description:
-      "A complete e-commerce and portfolio platform for Addis Ababa's premier manufacturer of biodegradable artisan kraft bags.",
-    longDescription:
-      "Full-stack web application featuring a stunning UI with a 360° interactive 3D studio. Allows users to order bespoke packaging, view client portfolios, and enroll in paper-making masterclasses.",
+      "A complete e-commerce and portfolio web application for Addis Ababa's manufacturer of biodegradable artisan kraft bags. Features bespoke packaging configurator and masterclass booking.",
     image: "https://images.unsplash.com/photo-1544816155-12df9643f363?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
-    tags: ["Next.js", "Tailwind CSS", "Three.js", "Full-Stack"],
+    tags: ["Next.js", "TypeScript", "Tailwind CSS", "Three.js"],
     category: "Web",
-    metrics: { status: "Live", type: "Full-Stack", deployment: "Vercel" },
     featured: true,
     live: "https://green-bag-five.vercel.app/",
     github: "https://github.com/eyoabn/green-bag",
   },
   {
     id: 10,
-    title: "Based Education (Spiritual Academy)",
-    tagline: "Next-Gen Unlimited Live Learning Platform",
+    title: "Based Education",
+    tagline: "Interactive Live Learning & Community Platform",
     description:
-      "An advanced e-learning platform offering live teachings, bible studies, and a sacred community for believers.",
-    longDescription:
-      "A comprehensive full-stack Next.js application featuring secure user authentication, role-based dashboards, live class integrations, and a beautiful premium dark-mode UI.",
+      "Full-stack Next.js web application providing structured courses, community discussions, role-based dashboards, and live video class integration with responsive dark and light modes.",
     image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
-    tags: ["Next.js", "React", "Tailwind CSS", "Full-Stack"],
+    tags: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
     category: "Web",
-    metrics: { status: "Live", type: "Full-Stack", deployment: "Vercel" },
     featured: true,
     live: "https://based-education.vercel.app/",
     github: "https://github.com/eyoabn/based-education",
@@ -73,15 +70,12 @@ const featuredProjects = [
   {
     id: 2,
     title: "Neural Network Visualizer",
-    tagline: "Demystifying deep learning architectures",
+    tagline: "Interactive Deep Learning & Layer Analytics Tool",
     description:
-      "An educational tool built to help students visualize and understand basic neural network architectures. Includes real-time training metrics and layer analysis to make complex ML concepts more approachable.",
-    longDescription:
-      "Interactive tool to visualize and understand neural networks. Features include layer visualization, gradient flow analysis, real-time training metrics, and architecture comparison.",
+      "An educational web application for exploring neural network architectures in real time. Features gradient flow analysis, weight histograms, and live training progress metrics.",
     image: "https://images.unsplash.com/photo-1770233621425-5d9ee7a0a700?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
-    tags: ["Python", "TensorFlow", "D3.js", "WebGL"],
+    tags: ["Python", "TensorFlow", "React", "FastAPI", "D3.js"],
     category: "AI",
-    metrics: { users: "Live", performance: "WebGL", status: "Open Source" },
     featured: true,
     live: "https://real-time-analytics-jh83.onrender.com/",
     github: "https://github.com/eyoabn/real-time-analytics",
@@ -89,453 +83,230 @@ const featuredProjects = [
   {
     id: 3,
     title: "Enjefo Construction",
-    tagline: "Building excellence from the ground up",
+    tagline: "Corporate Web Presence for Engineering & Construction",
     description:
-      "A modern, full-featured website for Enjefo Construction — a leading construction company based in Addis Ababa, Ethiopia. Showcases the company's services, projects, and expertise with a professional, responsive design.",
-    longDescription:
-      "A complete corporate web presence for Enjefo Construction. Features include an elegant hero section, service breakdowns, project portfolio gallery, contact forms, and smooth animations — all optimized for performance and SEO.",
+      "A fast, modern corporate web showcase for a premier construction and architecture firm in Addis Ababa. Highlights architectural project portfolios, service breakdowns, and inquiries.",
     image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
-    tags: ["Next.js", "TypeScript", "Tailwind CSS", "Vercel"],
+    tags: ["Next.js", "TypeScript", "Tailwind CSS", "SEO"],
     category: "Web",
-    metrics: { status: "Live", type: "Full-Stack", deployment: "Vercel" },
     featured: true,
     live: "https://enjefo-construction.vercel.app/",
   },
   {
     id: 4,
     title: "Kefit Job Matching Platform",
-    tagline: "Connecting talent with opportunity",
+    tagline: "Connecting Talent with Tech Opportunities",
     description:
-      "A modern job matching platform that connects job seekers with employers efficiently. Features intuitive profile creation, advanced job search filters, and seamless application tracking.",
-    longDescription:
-      "Full-stack web application for job matching. Includes user authentication, role-based dashboards, and real-time notifications.",
+      "Full-stack web application facilitating talent discovery and job matching. Features multi-role authentication, application tracking, resume parsing, and instant notifications.",
     image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
-    tags: ["React", "Node.js", "MongoDB", "Express"],
+    tags: ["React", "Node.js", "MongoDB", "Express", "JWT"],
     category: "Web",
-    metrics: { users: "Live", status: "Active", type: "Full-Stack" },
     featured: true,
     live: "https://kefit-job-matching-platform-1.onrender.com/",
     github: "https://github.com/eyoabn/kefit-job-matching-platform",
   },
-];
-
-const otherProjects = [
   {
     id: 5,
-    title: "E-Commerce Platform",
-    description: "Full-stack digital store with secure checkout, product catalog search, and admin order management.",
+    title: "Modern E-Commerce Engine",
+    tagline: "Full-Stack Digital Store & Checkout",
+    description:
+      "Full-stack store platform with real-time inventory management, product filtering, cart persistence, and administrative order dashboard.",
     image: "https://images.unsplash.com/photo-1753715613434-9c7cb58876b9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
-    tags: ["React", "Node.js", "MongoDB", "Express"],
-    link: "https://github.com/eyoabn",
+    tags: ["React", "Node.js", "Express", "MongoDB"],
+    category: "Web",
+    github: "https://github.com/eyoabn",
   },
   {
     id: 6,
     title: "Fitness & Habit Tracker",
-    description: "Cross-platform mobile application to track daily fitness goals, routines, and biometric metrics with offline support.",
+    tagline: "Cross-Platform Mobile Routine Companion",
+    description:
+      "Flutter mobile app engineered for tracking daily wellness habits, workouts, and biometrics with offline persistence and progress heatmaps.",
     image: "https://images.unsplash.com/photo-1758611970983-ff9f0ec0b0c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
     tags: ["Flutter", "Dart", "Firebase", "BLoC"],
-    link: "https://github.com/eyoabn",
+    category: "Mobile App",
+    github: "https://github.com/eyoabn",
   },
 ];
 
-function ProjectCard3D({ project, index, onViewProject }: { project: typeof featuredProjects[0]; index: number; onViewProject: (id: number) => void }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const rotateX = useTransform(mouseY, [-0.5, 0.5], [5, -5]);
-  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-5, 5]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current || window.innerWidth <= 768) return;
-
-    const rect = cardRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
-    const x = (e.clientX - centerX) / (rect.width / 2);
-    const y = (e.clientY - centerY) / (rect.height / 2);
-
-    mouseX.set(x);
-    mouseY.set(y);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-    setIsHovered(false);
-  };
-
-  return (
-    <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: index * 0.2 }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d",
-      }}
-      className="group relative min-w-[90vw] snap-center md:min-w-[600px] lg:min-w-[700px]"
-      data-cursor="View Project"
-    >
-      <motion.div
-        className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl"
-        animate={{
-          borderColor: isHovered ? "rgba(6, 182, 212, 0.5)" : "rgba(255, 255, 255, 0.1)",
-        }}
-        transition={{ duration: 0.3 }}
-      >
-        {/* Spotlight Effect */}
-        <motion.div
-          className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100"
-          style={{
-            background:
-              "radial-gradient(circle 400px at var(--mouse-x) var(--mouse-y), rgba(0,212,255,0.15), transparent 40%)",
-          }}
-          transition={{ duration: 0.3 }}
-        />
-
-        {/* Image Section */}
-        <div className="relative h-64 overflow-hidden md:h-80">
-          {/* A real <img> rather than a CSS background: it can be lazy-loaded, it
-              can carry alt text, and it can serve a right-sized file via srcset. */}
-          <motion.img
-            src={project.image}
-            srcSet={buildSrcSet(project.image)}
-            sizes={IMAGE_SIZES}
-            alt={`${project.title} — project preview`}
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover object-center"
-            style={{ transform: isHovered ? "scale(1.1)" : "scale(1)" }}
-            transition={{ duration: 0.6 }}
-            onError={(e) => {
-              const target = e.currentTarget;
-              target.srcset = "";
-              target.src = "https://images.unsplash.com/photo-1544816155-12df9643f363?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200";
-            }}
-          />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
-
-          {/* Featured Badge */}
-          <div className="absolute right-4 top-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5 }}
-              className="flex items-center gap-2 rounded-full border border-neon-cyan/50 bg-neon-cyan/10 px-4 py-2 backdrop-blur-lg"
-            >
-              <Sparkles className="h-4 w-4 text-neon-cyan" />
-              <span className="text-xs text-neon-cyan">Featured</span>
-            </motion.div>
-          </div>
-
-          {/* Metrics Overlay */}
-          <div className="absolute bottom-4 left-4 flex gap-3">
-            {Object.entries(project.metrics).map(([key, value]) => (
-              <motion.div
-                key={key}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="rounded-lg border border-border bg-card/80 px-3 py-1.5 backdrop-blur-lg"
-              >
-                <div className="text-xs text-neon-cyan">{value}</div>
-                <div className="text-[10px] text-muted-foreground capitalize">{key}</div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Content Section */}
-        <div className="relative p-8" style={{ transform: "translateZ(40px)" }}>
-          {/* Category Badge */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mb-3 inline-flex items-center gap-2 rounded-full border border-neon-purple/30 bg-neon-purple/10 px-3 py-1"
-          >
-            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-neon-purple" />
-            <span className="text-xs text-neon-purple">{project.category}</span>
-          </motion.div>
-
-          {/* Title */}
-          <h3 className="mb-2 text-3xl">{project.title}</h3>
-
-          {/* Tagline */}
-          <p className="mb-4 text-sm text-neon-cyan">{project.tagline}</p>
-
-          {/* Description */}
-          <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
-            {isHovered ? project.longDescription : project.description}
-          </p>
-
-          {/* Tech Stack */}
-          <div className="mb-6 flex flex-wrap gap-2">
-            {project.tags.map((tag) => (
-              <motion.span
-                key={tag}
-                whileHover={{ scale: 1.05, y: -2 }}
-                className="rounded-lg border border-border bg-muted/50 px-3 py-1 text-xs backdrop-blur-sm"
-              >
-                {tag}
-              </motion.span>
-            ))}
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-4">
-            <motion.button
-              onClick={(e) => {
-                e.preventDefault();
-                onViewProject(project.id);
-              }}
-              whileHover={{ scale: 1.05, x: 5 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 rounded-xl border border-neon-cyan bg-neon-cyan/10 px-6 py-3 transition-all hover:bg-neon-cyan/20 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] cursor-pointer"
-            >
-              <span className="text-sm text-neon-cyan">View Project</span>
-              <ExternalLink className="h-4 w-4 text-neon-cyan" />
-            </motion.button>
-
-            {project.github ? (
-              <motion.a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 rounded-xl border border-border bg-card/50 px-6 py-3 backdrop-blur-sm transition-all hover:border-neon-blue/50"
-              >
-                <Github className="h-4 w-4" />
-                <span className="text-sm">Source</span>
-              </motion.a>
-            ) : (
-              <div className="flex items-center gap-2 rounded-xl border border-border/40 bg-card/30 px-4 py-3 text-xs text-muted-foreground">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
-                <span>Proprietary / Client</span>
-              </div>
-            )}
-
-            <motion.button
-              onClick={(e) => {
-                e.preventDefault();
-                onViewProject(project.id);
-              }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              aria-label={`View ${project.title}`}
-              className="ml-auto rounded-full border border-border bg-card/50 p-3 backdrop-blur-sm transition-all hover:border-neon-purple/50 hover:bg-neon-purple/10 cursor-pointer"
-            >
-              <ArrowRight className="h-5 w-5 text-neon-purple" />
-            </motion.button>
-          </div>
-        </div>
-
-        {/* Glow Effects */}
-        <div className="pointer-events-none absolute -bottom-32 -left-32 h-64 w-64 rounded-full bg-neon-blue/20 blur-[100px] transition-all group-hover:bg-neon-blue/30" />
-        <div className="pointer-events-none absolute -right-32 -top-32 h-64 w-64 rounded-full bg-neon-purple/20 blur-[100px] transition-all group-hover:bg-neon-purple/30" />
-      </motion.div>
-    </motion.div>
-  );
-}
-
 export function Projects() {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [filter, setFilter] = useState<string>("All");
   const [showEduConnectSimulator, setShowEduConnectSimulator] = useState(false);
 
-  const handleViewProject = (id: number) => {
-    if (id === 1) {
-      setShowEduConnectSimulator(true);
-    } else {
-      const project = featuredProjects.find((p) => p.id === id);
-      if (project && (project as any).live) {
-        window.open((project as any).live, "_blank");
-      }
-    }
-  };
+  const categories = ["All", "Web", "Mobile App", "AI"];
+
+  const filteredProjects =
+    filter === "All"
+      ? projectsList
+      : projectsList.filter((p) => p.category === filter);
 
   return (
-    <section id="projects" className="relative px-4 py-32">
-      {/* Background */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neon-blue/5 blur-[150px]" />
-      </div>
-
-      <div className="mx-auto max-w-[90rem]">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
-        >
-          <h2 className="mb-4 bg-gradient-to-r from-neon-purple via-neon-blue to-neon-cyan bg-clip-text text-4xl tracking-tight text-transparent md:text-5xl">
-            Featured Work
-          </h2>
-          <p className="mb-4 text-muted-foreground">
-            Showcase of premium projects • Scroll to explore • Hover for details
-          </p>
-          <div className="mx-auto h-1 w-20 rounded-full bg-gradient-to-r from-neon-purple to-neon-cyan" />
-        </motion.div>
-
-        {/* Horizontal Scroll Container */}
-        <div className="relative mb-16">
-          {/* Scroll Hint */}
-          <motion.div
-            initial={{ opacity: 1 }}
-            animate={{ opacity: [1, 0.5, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="mb-6 flex items-center justify-center gap-2 text-sm text-muted-foreground"
-          >
-            <ArrowRight className="h-4 w-4" />
-            <span>Scroll horizontally to explore projects</span>
-            <ArrowRight className="h-4 w-4" />
-          </motion.div>
-
-          {/* Scrollable Projects */}
-          <div
-            ref={scrollRef}
-            className="no-scrollbar flex gap-8 overflow-x-auto scroll-smooth px-4 pb-8"
-            style={{
-              scrollSnapType: "x mandatory",
-              scrollPaddingLeft: "20px",
-            }}
-          >
-            {featuredProjects.map((project, index) => (
-              <ProjectCard3D key={project.id} project={project} index={index} onViewProject={handleViewProject} />
-            ))}
+    <section id="projects" className="relative px-6 py-28 lg:px-12">
+      <div className="mx-auto max-w-7xl">
+        
+        {/* Section Header */}
+        <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6 border-b border-border/60 pb-8">
+          <div>
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Portfolio
+            </div>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              Selected Projects
+            </h2>
+            <p className="mt-2 max-w-xl text-base text-muted-foreground">
+              A curated selection of production web applications, cross-platform mobile apps, and tools I've designed and built.
+            </p>
           </div>
 
-          {/* Gradient Overlays */}
-          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-background to-transparent" />
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-background to-transparent" />
+          {/* Category Filter Pills */}
+          <div className="flex flex-wrap gap-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setFilter(cat)}
+                className={`rounded-xl px-4 py-2 text-xs font-medium transition-all cursor-pointer ${
+                  filter === cat
+                    ? "bg-foreground text-background shadow-xs font-semibold"
+                    : "border border-border/80 bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {cat === "All" ? "All Projects" : cat}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Other Projects Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h3 className="mb-8 text-center text-2xl">More Projects</h3>
-          <div className="grid gap-6 md:grid-cols-2">
-            {otherProjects.map((project, index) => (
-              <motion.a
-                key={project.id}
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -10 }}
-                className="group relative block overflow-hidden rounded-3xl border border-border/40 bg-card/40 backdrop-blur-2xl transition-all hover:border-neon-cyan/60 hover:shadow-[0_0_50px_rgba(6,182,212,0.15)] cursor-pointer"
-                data-cursor="View"
-              >
-                <div className="relative h-56 overflow-hidden">
-                  <img
-                    src={project.image}
-                    srcSet={buildSrcSet(project.image)}
-                    sizes={IMAGE_SIZES}
-                    alt={`${project.title} — project preview`}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110"
-                  />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-70" />
-                  
-                  {/* Subtle Top-Right Arrow for Interaction Cue */}
-                  <div className="absolute right-4 top-4 translate-x-4 -translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neon-cyan/20 backdrop-blur-md">
-                      <ArrowRight className="h-5 w-5 -rotate-45 text-neon-cyan" />
-                    </div>
-                  </div>
+        {/* Projects Grid */}
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
+          {filteredProjects.map((project, index) => (
+            <motion.div
+              key={project.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.45, delay: index * 0.05 }}
+              className="group flex flex-col overflow-hidden rounded-3xl border border-border/80 bg-card shadow-xs transition-all hover:border-foreground/20 hover:shadow-md"
+            >
+              {/* Project Image */}
+              <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
+                <img
+                  src={project.image}
+                  srcSet={buildSrcSet(project.image)}
+                  sizes={IMAGE_SIZES}
+                  alt={`${project.title} preview`}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    target.srcset = "";
+                    target.src =
+                      "https://images.unsplash.com/photo-1544816155-12df9643f363?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200";
+                  }}
+                />
+
+                {/* Category Pill */}
+                <div className="absolute top-4 left-4">
+                  <span className="inline-flex items-center rounded-full border border-black/10 bg-black/60 px-3 py-1 text-xs font-medium text-white backdrop-blur-md">
+                    {project.category}
+                  </span>
                 </div>
 
-                <div className="relative p-8">
-                  <h4 className="mb-3 text-2xl font-medium tracking-tight group-hover:text-neon-cyan transition-colors duration-300">{project.title}</h4>
-                  <p className="mb-6 text-sm leading-relaxed text-muted-foreground">{project.description}</p>
+                {/* Featured Badge */}
+                {project.featured && (
+                  <div className="absolute top-4 right-4">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white/90 px-3 py-1 text-xs font-semibold text-zinc-900 shadow-xs backdrop-blur-md">
+                      <Sparkles className="h-3 w-3 text-amber-500" />
+                      Featured
+                    </span>
+                  </div>
+                )}
+              </div>
 
-                  <div className="flex flex-wrap gap-2">
+              {/* Card Body */}
+              <div className="flex flex-1 flex-col justify-between p-7">
+                <div>
+                  <h3 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+                    {project.title}
+                  </h3>
+                  <p className="mt-1 text-sm font-medium text-primary">
+                    {project.tagline}
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                    {project.description}
+                  </p>
+                </div>
+
+                <div className="mt-6 border-t border-border/60 pt-5">
+                  {/* Tags */}
+                  <div className="mb-5 flex flex-wrap gap-1.5">
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-lg border border-border/50 bg-background/50 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur-sm transition-colors duration-300 group-hover:border-neon-cyan/30 group-hover:text-foreground"
+                        className="rounded-lg border border-border/60 bg-muted/60 px-2.5 py-1 text-xs text-muted-foreground"
                       >
                         {tag}
                       </span>
                     ))}
                   </div>
-                </div>
 
-                {/* Refined Glow Effects */}
-                <div className="pointer-events-none absolute -bottom-20 -right-20 h-48 w-48 rounded-full bg-neon-cyan/10 blur-[80px] transition-all duration-500 group-hover:bg-neon-cyan/20 group-hover:blur-[100px]" />
-                <div className="pointer-events-none absolute -top-20 -left-20 h-48 w-48 rounded-full bg-neon-purple/5 blur-[80px] transition-all duration-500 group-hover:bg-neon-purple/20 group-hover:blur-[100px]" />
-              </motion.a>
-            ))}
-          </div>
-        </motion.div>
+                  {/* Actions */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    {/* Simulator Trigger */}
+                    {project.hasSimulator && (
+                      <button
+                        onClick={() => setShowEduConnectSimulator(true)}
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-xs transition-opacity hover:opacity-90 active:scale-95 cursor-pointer"
+                      >
+                        <Smartphone className="h-3.5 w-3.5" />
+                        <span>Try Simulator</span>
+                      </button>
+                    )}
 
-        {/* View All Projects CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-12 text-center"
-        >
-          <motion.a
-            href="https://github.com/eyoabn?tab=repositories"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center gap-2 rounded-xl border border-neon-purple bg-neon-purple/10 px-8 py-4 transition-all hover:bg-neon-purple/20 hover:shadow-[0_0_30px_rgba(168,85,247,0.3)]"
-          >
-            <span className="text-neon-purple">View All Projects</span>
-            <ArrowRight className="h-5 w-5 text-neon-purple" />
-          </motion.a>
-        </motion.div>
-      </div>
+                    {/* Live Demo Link */}
+                    {project.live && (
+                      <a
+                        href={project.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-xs transition-opacity hover:opacity-90 active:scale-95"
+                      >
+                        <span>Live Site</span>
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                      </a>
+                    )}
 
-      <style>{`
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
-      
-      <AnimatePresence>
-        {showEduConnectSimulator && (
-          <Suspense
-            fallback={
-              <div className="fixed inset-0 z-[60] flex items-center justify-center bg-background/80 backdrop-blur-sm">
-                <div className="flex flex-col items-center gap-3">
-                  <div className="h-10 w-10 animate-spin rounded-full border-2 border-border border-t-neon-cyan" />
-                  <p className="text-sm text-muted-foreground">Loading simulator…</p>
+                    {/* Source Code Link */}
+                    {project.github ? (
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-4 py-2.5 text-xs font-medium text-foreground transition-colors hover:bg-muted active:scale-95"
+                      >
+                        <Github className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span>Source</span>
+                      </a>
+                    ) : (
+                      <span className="text-xs text-muted-foreground italic">
+                        Proprietary / Client Project
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
-            }
-          >
-            <EduConnectSimulator onClose={() => setShowEduConnectSimulator(false)} />
-          </Suspense>
+            </motion.div>
+          ))}
+        </div>
+
+      </div>
+
+      {/* Simulator Modal */}
+      <Suspense fallback={null}>
+        {showEduConnectSimulator && (
+          <EduConnectSimulator onClose={() => setShowEduConnectSimulator(false)} />
         )}
-      </AnimatePresence>
+      </Suspense>
     </section>
   );
 }
